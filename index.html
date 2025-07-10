@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard PKG Siswa</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap & DataTables -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+
+    <!-- SweetAlert2 & SheetJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(to bottom, #eaf0f7 0%, #f8f9fa 100%);
+        padding-top: 80px;
+        padding-bottom: 80px; /* ✅ ini ditambahkan */
+      }
+      .navbar {
+        background-color: white;
+      }
+      .navbar-brand {
+        font-weight: 600;
+        color: #28a745 !important;
+      }
+      .card {
+        transition: all 0.3s ease-in-out;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
+      .card-illustration {
+        width: 100px;
+        height: auto;
+      }
+      .accordion-button {
+        font-weight: 500;
+      }
+      .accordion-body {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+      }
+      .hover-link:hover {
+        background-color: #f1f1f1;
+        color: #d63031;
+      }
+      .footer {
+        font-size: 14px;
+        background-color: white;
+      }
+      /* Dark Mode */
+      body.dark-mode {
+        background-color: #121212;
+        color: #e0e0e0;
+      }
+
+      body.dark-mode .navbar,
+      body.dark-mode .footer {
+        background-color: #1f1f1f;
+        color: #e0e0e0;
+      }
+
+      body.dark-mode .card {
+        background-color: #1f1f1f;
+        color: #e0e0e0;
+        border: 1px solid #333;
+      }
+
+      body.dark-mode .accordion-button {
+        background-color: #2c2c2c;
+        color: #e0e0e0;
+      }
+
+      body.dark-mode .accordion-body {
+        background-color: #2c2c2c;
+        color: #e0e0e0;
+      }
+
+      .dark-toggle {
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+
+      .transition-all {
+        transition: all 0.3s ease-in-out;
+      }
+      .logopkm {
+        width: 350px;
+        height: auto;
+      }
+      .custom-card {
+        position: relative;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 25px 20px 20px;
+        background: #fff;
+        height: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease-in-out;
+      }
+
+      .custom-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .card-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: #fff;
+        font-weight: bold;
+        padding: 8px 16px;
+        font-size: 15px;
+        border-bottom-right-radius: 10px;
+        border-top-left-radius: 8px;
+      }
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+      }
+
+      .card-list {
+        padding-left: 20px;
+        font-size: 14px;
+        color: #444;
+      }
+
+      .card-list li {
+        margin-bottom: 6px;
+      }
+
+      /* Warna Jenjang */
+      .bg-sd {
+        background-color: #f15c22;
+      }
+      .bg-smp {
+        background-color: #ff9f1c;
+      }
+      .bg-sma {
+        background-color: #28a745;
+      }
+      .border-sd {
+        border-color: #f15c22 !important;
+      }
+      .border-smp {
+        border-color: #ff9f1c !important;
+      }
+      .border-sma {
+        border-color: #28a745 !important;
+      }
+    </style>
+  </head>
+  <body class="transition-all">
+    <!-- Navbar -->
+    <nav class="navbar fixed-top shadow">
+      <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h5">
+          <i class="bi bi-bar-chart-line"></i> Dashboard CKG Siswa Sekolah
+        </span>
+        <span
+          class="dark-toggle text-dark"
+          id="darkToggle"
+          title="Mode Gelap/Terang"
+          >🌙</span
+        >
+      </div>
+    </nav>
+
+    <!-- Loader (Hidden) -->
+    <div id="loader" style="display: none" class="text-center my-4">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+    <!-- logo -->
+    <div class="container my-4" id="accordionWrapper">
+      <div class="logopkm">
+        <img src="assets/pkm.png" alt="Logo Puskesmas" class="logopkm" />
+      </div>
+    </div>
+    <!-- Main Content -->
+    <div class="container my-4" id="accordionWrapper">
+      <div class="row g-4 align-items-stretch">
+        <!-- SD Section -->
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h5 class="fw-semibold text-danger mb-0">Sekolah Dasar</h5>
+                <img
+                  src="assets/sd.png"
+                  alt="Ilustrasi SD"
+                  class="card-illustration d-none d-md-block"
+                />
+              </div>
+              <div
+                class="accordion accordion-flush"
+                id="accordionSD"
+                data-bs-parent="#accordionWrapper"
+              >
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingSD">
+                    <button
+                      class="accordion-button collapsed px-2 py-2"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseSD"
+                      aria-expanded="false"
+                      aria-controls="collapseSD"
+                    >
+                      <i class="bi bi-folder2-open me-2"></i> Lihat Data
+                      Skrining SD
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseSD"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingSD"
+                  >
+                    <div class="accordion-body px-3 pt-2 pb-3">
+                      <ul class="list-unstyled mb-0">
+                        <li>
+                          <a
+                            href="SD/SD1KARANGSOKO.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >1. SD NEGERI 1 KARANGSOKO</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD2KARANGSOKO.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >2. SD NEGERI 2 KARANGSOKO
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD3KARANGSOKO.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >3. SD NEGERI 3 KARANGSOKO
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD1SAMBIREJO.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >4. SD NEGERI 1 SAMBIREJO
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD2SAMBIREJO.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >5. SD NEGERI 2 SAMBIREJO
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD1KELUTAN.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >6. SD NEGERI 1 KELUTAN
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD2KELUTAN.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >7. SD NEGERI 2 KELUTAN
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD1NGANTRU.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >8. SD NEGERI 1 NGANTRU
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD2NGANTRU.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >9. SD NEGERI 2 NGANTRU
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD1TAMANAN.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >10. SD NEGERI 1 TAMANAN
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD2TAMANAN.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >11. SD NEGERI 2 TAMANAN
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD3TAMANAN.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >12. SD NEGERI 3 TAMANAN
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/LUQMAN.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >13. SD INTEGRAL LUQMAN AL HAKIM
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD1SUMBERGEDONG.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >14. SD NEGERI 1 SUMBERGEDONG
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="SD/SD1SUMBERGEDONG.html"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >15. SD NEGERI 2 SUMBERGEDONG
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >16. SD MUHAMMADIYAH 1 TRENGGALEK
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            >17. MI DARUNNAJAH
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SMP Section -->
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h5 class="fw-semibold text-primary mb-0">
+                  Sekolah Menengah Pertama
+                </h5>
+                <img
+                  src="assets/SMP.png"
+                  alt="Ilustrasi SMP"
+                  class="card-illustration d-none d-md-block"
+                />
+              </div>
+              <div
+                class="accordion accordion-flush"
+                id="accordionSMP"
+                data-bs-parent="#accordionWrapper"
+              >
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingSMP">
+                    <button
+                      class="accordion-button collapsed px-2 py-2"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseSMP"
+                      aria-expanded="false"
+                      aria-controls="collapseSMP"
+                    >
+                      <i class="bi bi-folder2-open me-2"></i> Lihat Data
+                      Skrining SMP
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseSMP"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingSMP"
+                  >
+                    <div class="accordion-body px-3 pt-2 pb-3">
+                      <ul class="list-unstyled mb-0">
+                        <li>
+                          <a
+                            href="#"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            onclick="showLoading()"
+                            >1. SMP Negeri 1</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            onclick="showLoading()"
+                            >2. SMP Negeri 2</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SMA/SMK Section -->
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h5 class="fw-semibold text-success mb-0">SMA / SMK</h5>
+                <img
+                  src="assets/sma.png"
+                  alt="Ilustrasi SMA/SMK"
+                  class="card-illustration d-none d-md-block"
+                />
+              </div>
+              <div
+                class="accordion accordion-flush"
+                id="accordionSMA"
+                data-bs-parent="#accordionWrapper"
+              >
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingSMA">
+                    <button
+                      class="accordion-button collapsed px-2 py-2"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseSMA"
+                      aria-expanded="false"
+                      aria-controls="collapseSMA"
+                    >
+                      <i class="bi bi-folder2-open me-2"></i> Lihat Data
+                      Skrining SMA / SMK
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseSMA"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingSMA"
+                  >
+                    <div class="accordion-body px-3 pt-2 pb-3">
+                      <ul class="list-unstyled mb-0">
+                        <li>
+                          <a
+                            href="#"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            onclick="showLoading()"
+                            >1. SMA Negeri 1</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
+                            onclick="showLoading()"
+                            >2. SMK Negeri 1</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Container -->
+      <div class="container my-5">
+        <div class="row g-4 justify-content-center">
+          <!-- Card SD -->
+          <div class="col-md-4">
+            <div class="custom-card border-sd">
+              <div class="card-label bg-sd">01</div>
+              <div class="card-content">
+                <h5 class="card-title text-center">
+                  SEKOLAH DASAR (Usia 7–12 tahun)
+                </h5>
+                <ul class="card-list">
+                  <li>Status gizi</li>
+                  <li>Merokok <small>(kelas 5–6)</small></li>
+                  <li>Tingkat aktivitas fisik <small>(kelas 4–6)</small></li>
+                  <li>Tekanan darah</li>
+                  <li>Gula darah</li>
+                  <li>Tuberkulosis</li>
+                  <li>Telinga, Mata, Gigi</li>
+                  <li>Jiwa</li>
+                  <li>Hati <small>(Hepatitis B)</small></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card SMP -->
+          <div class="col-md-4">
+            <div class="custom-card border-smp">
+              <div class="card-label bg-smp">02</div>
+              <div class="card-content">
+                <h5 class="card-title text-center">SMP (Usia 13–15 tahun)</h5>
+                <ul class="card-list">
+                  <li>Status gizi</li>
+                  <li>Merokok</li>
+                  <li>Tingkat aktivitas fisik</li>
+                  <li>Tekanan darah</li>
+                  <li>Gula darah</li>
+                  <li>Tuberkulosis</li>
+                  <li>Talasemia <small>(kelas 7)</small></li>
+                  <li>Anemia remaja putri <small>(kelas 7)</small></li>
+                  <li>Telinga, Mata, Gigi</li>
+                  <li>Jiwa</li>
+                  <li>Hati <small>(Hepatitis B & C)</small></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card SMA -->
+          <div class="col-md-4">
+            <div class="custom-card border-sma">
+              <div class="card-label bg-sma">03</div>
+              <div class="card-content">
+                <h5 class="card-title text-center">
+                  SMA / SMK (Usia 16–17 tahun)
+                </h5>
+                <ul class="card-list">
+                  <li>Status gizi</li>
+                  <li>Merokok</li>
+                  <li>Tingkat aktivitas fisik</li>
+                  <li>Tekanan darah</li>
+                  <li>Gula darah</li>
+                  <li>Tuberkulosis</li>
+                  <li>Anemia remaja putri <small>(kelas 10)</small></li>
+                  <li>Telinga, Mata, Gigi</li>
+                  <li>Jiwa</li>
+                  <li>Hati <small>(Hepatitis B & C)</small></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center py-3 mt-5 fixed-bottom shadow bg-white">
+      <div class="container">
+        &copy; 2025 Puskesmas Trenggalek | Aplikasi Skrining Siswa
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+      function showLoading() {
+        document.getElementById("loader").style.display = "block";
+      }
+      // Inisialisasi dark mode dari localStorage
+      const toggle = document.getElementById("darkToggle");
+      const body = document.body;
+
+      function updateToggleIcon() {
+        toggle.textContent = body.classList.contains("dark-mode") ? "☀️" : "🌙";
+      }
+
+      toggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+        localStorage.setItem(
+          "theme",
+          body.classList.contains("dark-mode") ? "dark" : "light"
+        );
+        updateToggleIcon();
+      });
+
+      // Cek preferensi saat awal load
+      window.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem("theme") === "dark") {
+          body.classList.add("dark-mode");
+        }
+        updateToggleIcon();
+      });
+    </script>
+  </body>
+</html>

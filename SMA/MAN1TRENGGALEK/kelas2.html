@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Skrining CKG</title>
+
+    <!-- Bootstrap & DataTables -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+      body {
+        padding-top: 70px;
+        padding-bottom: 60px;
+        background-color: #f8f9fa;
+      }
+      .table-sm td,
+      .table-sm th {
+        font-size: 12px !important;
+      }
+      thead th {
+        /*position: sticky;*/
+        top: 0;
+        background-color: #212529;
+        color: white;
+        z-index: 2;
+      }
+      #signaturePad {
+        touch-action: none;
+        cursor: crosshair;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-light bg-white bg-gradient fixed-top shadow">
+      <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h5 text-success">
+          <i class="bi bi-bar-chart-line"></i> Register PKG Siswa MAN 1
+          TRENGGALEK
+        </span>
+        <button
+          onclick="history.back()"
+          class="btn btn-outline-secondary btn-sm"
+        >
+          <i class="bi bi-arrow-left-circle"></i> Kembali
+        </button>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <!-- Header + Button -->
+      <div
+        class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
+      >
+        <h4 class="text-success mb-0">
+          <u>Data Siswa Kelas 2 </u>
+        </h4>
+        <div class="d-flex gap-2">
+          <button
+            class="btn btn-sm btn-outline-success shadow"
+            id="importExcelBtn"
+          >
+            <i class="bi bi-upload"></i> Import Excel
+          </button>
+          <a
+            href="https://docs.google.com/spreadsheets/d/1SCnLLIbMY8W9sxOLNkFsK2gqald-uSE_o-Vy4kzPGT4/edit?usp=sharing"
+            target="_blank"
+            class="btn btn-outline-danger btn-sm shadow"
+          >
+            <i class="bi bi-file-earmark-richtext"></i> View Source Data
+          </a>
+        </div>
+      </div>
+
+      <!-- Tabel -->
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="dataTable">
+              <thead id="tableHead" class="table-success bg-gradient"></thead>
+              <tbody id="tableBody">
+                <tr class="text-center">
+                  <td colspan="100%">
+                    <div
+                      class="spinner-border text-primary"
+                      role="status"
+                    ></div>
+                    <div>Memuat data...</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Detail Data  -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detail Skrining</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="detailContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal TTD -->
+    <div class="modal fade" id="ttdModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form id="ttdForm">
+            <div class="modal-header">
+              <h5 class="modal-title">Tanda Tangan Siswa</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <canvas
+                id="signaturePad"
+                style="border: 1px solid #ccc; width: 100%; height: 150px"
+              ></canvas>
+              <button
+                type="button"
+                class="btn btn-sm btn-secondary mt-2"
+                id="clearBtn"
+              >
+                Bersihkan
+              </button>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" id="rowIndex" />
+              <button type="submit" class="btn btn-primary">Simpan TTD</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <input
+      type="file"
+      id="excelFileInput"
+      accept=".xlsx, .xls"
+      style="display: none"
+    />
+
+    <!-- Footer -->
+    <footer class="bg-light text-dark text-center py-2 fixed-bottom">
+      <div class="container">
+        &copy; 2025 Puskesmas Trenggalek | Aplikasi Skrining Siswa
+      </div>
+    </footer>
+
+    <!-- Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+      const kelas = "Kelas 2"; // ✅ Sheet yang digunakan
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbyHSjoGssKlVQCxa6RXkgbfFmQJniS_is1TEKlD6ckNVj_9H4EKFC82TI5Einwa0rLLiA/exec";
+      const getScriptURL = () =>
+        `${scriptURL}?kelas=${encodeURIComponent(kelas)}`;
+      let globalData = [];
+
+      const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
+      const canvas = document.getElementById("signaturePad");
+      const ctx = canvas.getContext("2d");
+      let drawing = false;
+
+      function resizeCanvas() {
+        const parent = canvas.parentElement;
+        canvas.width = parent.offsetWidth;
+        canvas.height = 150;
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+
+      canvas.addEventListener("mousedown", () => (drawing = true));
+      canvas.addEventListener("mouseup", () => {
+        drawing = false;
+        ctx.beginPath();
+      });
+      canvas.addEventListener("mousemove", draw);
+
+      canvas.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        drawing = true;
+      });
+      canvas.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        drawing = false;
+        ctx.beginPath();
+      });
+      canvas.addEventListener("touchmove", drawTouch);
+
+      function draw(e) {
+        if (!drawing) return;
+        const rect = canvas.getBoundingClientRect();
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "#000";
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      }
+
+      function drawTouch(e) {
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        if (drawing) {
+          ctx.lineWidth = 2;
+          ctx.lineCap = "round";
+          ctx.strokeStyle = "#000";
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+        }
+        e.preventDefault();
+      }
+
+      document.getElementById("clearBtn").onclick = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      };
+
+      const detailFields = [
+        "Risiko Tuberkulosis",
+        "Gejala DM Anak",
+        "Risiko Kesehatan Jiwa",
+        "Kesehatan Reproduksi",
+        "Perilaku Merokok",
+        "Risiko Hepatitis B",
+        "Risiko Hepatitis C",
+        "Risiko Talasemia",
+        "Aktivitas Fisik*",
+        "PAR-Q",
+        "Riwayat Imunisasi HPV* (Kelas 9 Putri)",
+      ];
+
+      window.showDetail = function (index) {
+        const row = globalData[index];
+        let html = `<form id="editForm"><table class='table table-bordered table-sm'>`;
+        detailFields.forEach((field) => {
+          html += `<tr>
+      <th>${field}</th>
+      <td><input type="text" class="form-control form-control-sm" name="${field}" value="${
+            row[field] || ""
+          }"></td>
+    </tr>`;
+        });
+        html += `</table></form>
+    <div class="text-end">
+      <button type="button" class="btn btn-success btn-sm" onclick="submitEdit(${index})">
+        <i class="bi bi-save"></i> Simpan Perubahan
+      </button>
+    </div>`;
+        document.getElementById("detailContent").innerHTML = html;
+        new bootstrap.Modal(document.getElementById("detailModal")).show();
+      };
+
+      window.submitEdit = async function (index) {
+        const formEl = document.getElementById("editForm");
+        const formData = new FormData(formEl);
+        const row = globalData[index];
+        const payload = new URLSearchParams();
+
+        Object.keys(row).forEach((k) => {
+          if (!detailFields.includes(k)) payload.append(k, row[k]);
+        });
+        detailFields.forEach((field) => {
+          payload.append(field, formData.get(field));
+        });
+
+        payload.append("action", "edit");
+        payload.append("index", index);
+        payload.append("kelas", kelas); // ✅ kirim kelas
+
+        Swal.fire({
+          title: "Menyimpan...",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+        try {
+          const res = await fetch(scriptURL, { method: "POST", body: payload });
+          const result = await res.json();
+          Swal.fire(
+            "Berhasil",
+            result.message || "Data berhasil disimpan!",
+            "success"
+          ).then(() => location.reload());
+        } catch {
+          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
+        }
+      };
+
+      async function loadData() {
+        try {
+          const res = await fetch(getScriptURL());
+          const result = await res.json();
+          globalData = result.data || result;
+
+          const headers = (
+            result.headers || Object.keys(globalData[0] || {})
+          ).filter((h) => h !== "TTD" && !detailFields.includes(h));
+
+          const tableHead = document.getElementById("tableHead");
+          const tableBody = document.getElementById("tableBody");
+          tableHead.innerHTML = "";
+          tableBody.innerHTML = "";
+
+          if (globalData.length === 0) {
+            tableHead.innerHTML = "<tr><th class='text-center'>Info</th></tr>";
+            tableBody.innerHTML =
+              "<tr><td class='text-center text-muted'>Data kosong</td></tr>";
+            return;
+          }
+
+          const headRow = document.createElement("tr");
+          headers.forEach((h) => {
+            const th = document.createElement("th");
+            th.textContent = h;
+            headRow.appendChild(th);
+          });
+          headRow.innerHTML += "<th>Detail Skrining</th><th>Aksi</th>";
+          tableHead.appendChild(headRow);
+
+          globalData.forEach((row, i) => {
+            const tr = document.createElement("tr");
+            headers.forEach((h) => {
+              const td = document.createElement("td");
+              td.innerHTML = formatValue(row[h], h);
+              tr.appendChild(td);
+            });
+
+            const detailTd = document.createElement("td");
+            detailTd.innerHTML = `<button class='btn btn-sm btn-outline-info' onclick='showDetail(${i})'><i class="bi bi-binoculars"></i> View</button>`;
+            tr.appendChild(detailTd);
+
+            const aksiTd = document.createElement("td");
+            if (row["TTD"] && row["TTD"].startsWith("http")) {
+              aksiTd.innerHTML = `<a href="${row["TTD"]}" class='btn btn-sm btn-outline-warning' target="_blank"><i class="bi bi-vector-pen"></i></a>`;
+            } else {
+              aksiTd.innerHTML = `<button class="btn btn-sm btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`;
+            }
+            tr.appendChild(aksiTd);
+            tableBody.appendChild(tr);
+          });
+
+          $("#dataTable").DataTable({
+            destroy: true,
+            responsive: true,
+            order: [],
+            language: {
+              url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json",
+            },
+            columnDefs: [{ targets: "_all", className: "text-center" }],
+          });
+        } catch (error) {
+          console.error(error);
+          Swal.fire(
+            "Gagal",
+            "Gagal memuat data. Periksa koneksi atau scriptURL.",
+            "error"
+          );
+        }
+      }
+
+      function formatValue(value, header) {
+        if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+          const date = new Date(value);
+          return date.toLocaleDateString("id-ID");
+        }
+        return value;
+      }
+
+      function isCanvasEmpty(canvas) {
+        const blank = document.createElement("canvas");
+        blank.width = canvas.width;
+        blank.height = canvas.height;
+        return canvas.toDataURL() === blank.toDataURL();
+      }
+
+      window.openTTDModal = (index) => {
+        document.getElementById("rowIndex").value = index;
+        ttdModal.show();
+        setTimeout(() => resizeCanvas(), 300);
+      };
+
+      document
+        .getElementById("ttdForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          if (isCanvasEmpty(canvas)) {
+            Swal.fire(
+              "Kosong",
+              "Silakan tanda tangani dulu sebelum menyimpan.",
+              "warning"
+            );
+            return;
+          }
+
+          Swal.fire({
+            title: "Menyimpan TTD...",
+            text: "Mohon tunggu sebentar.",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
+          });
+
+          const index = document.getElementById("rowIndex").value;
+          const row = globalData[index];
+          const headers = Object.keys(row);
+          const formData = new URLSearchParams();
+          headers.forEach((h) => formData.append(h, row[h]));
+          formData.append("file", canvas.toDataURL("image/png").split(",")[1]);
+          formData.append(
+            "fileName",
+            `ttd_${(row["Nama"] || "tanpa_nama").replace(/\s+/g, "_")}.png`
+          );
+          formData.append("mimeType", "image/png");
+          formData.append("action", "edit");
+          formData.append("index", index);
+          formData.append("kelas", kelas); // ✅ kelas dikirim juga
+
+          try {
+            const response = await fetch(scriptURL, {
+              method: "POST",
+              body: formData,
+            });
+            const result = await response.json();
+            ttdModal.hide();
+            Swal.fire(
+              "Berhasil",
+              result.message || "TTD berhasil disimpan.",
+              "success"
+            ).then(() => location.reload());
+          } catch {
+            Swal.fire("Gagal", "Gagal menyimpan TTD.", "error");
+          }
+        });
+
+      $(document).on("click", "#importExcelBtn", function () {
+        $("#excelFileInput").click();
+      });
+
+      $("#excelFileInput").on("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        Swal.fire({
+          title: "Mengimpor...",
+          text: "Mohon tunggu hingga proses selesai.",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+          const promises = jsonData.map((item) => {
+            const formData = new URLSearchParams();
+            for (const key in item) {
+              formData.append(key, item[key]);
+            }
+            formData.append("action", "add");
+            formData.append("kelas", kelas); // ✅ kirim kelas juga
+
+            return fetch(scriptURL, {
+              method: "POST",
+              body: formData,
+            });
+          });
+
+          Promise.all(promises)
+            .then(() => {
+              Swal.fire(
+                "Sukses",
+                "Data Excel berhasil diimpor!",
+                "success"
+              ).then(() => location.reload());
+            })
+            .catch((err) => {
+              console.error("Gagal kirim data Excel", err);
+              Swal.fire("Gagal", "Terjadi kesalahan saat impor data.", "error");
+            });
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      loadData(); // 🚀 panggil saat pertama kali
+    </script>
+  </body>
+</html>

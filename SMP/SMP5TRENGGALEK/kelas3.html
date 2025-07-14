@@ -53,7 +53,7 @@
     <nav class="navbar navbar-light bg-white bg-gradient fixed-top shadow">
       <div class="container d-flex justify-content-between align-items-center">
         <span class="navbar-brand mb-0 h5 text-success">
-          <i class="bi bi-bar-chart-line"></i> Register PKG Siswa SMP 4
+          <i class="bi bi-bar-chart-line"></i> Register PKG Siswa SMP 5
           TRENGGALEK
         </span>
         <button
@@ -71,7 +71,7 @@
         class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
       >
         <h4 class="text-success mb-0">
-          <u>Data Siswa Kelas 1 </u>
+          <u>Data Siswa Kelas 3 </u>
         </h4>
         <div class="d-flex gap-2">
           <button
@@ -81,7 +81,7 @@
             <i class="bi bi-upload"></i> Import Excel
           </button>
           <a
-            href="https://docs.google.com/spreadsheets/d/1-HgKSIFFEbgbvBLphz4jqVF4b_C4qutTDUu7FZATSms/edit?usp=sharing"
+            href="https://docs.google.com/spreadsheets/d/1yDlQ6mi_bOH0gwnPNhEls7G7GRYHjD15fGCzW5q4ilY/edit?usp=sharing"
             target="_blank"
             class="btn btn-outline-danger btn-sm shadow"
           >
@@ -187,9 +187,9 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-      const kelas = "Kelas 1"; // ✅ Sheet yang digunakan
+      const kelas = "Kelas 3"; // ✅ Sheet yang digunakan
       const scriptURL =
-        "https://script.google.com/macros/s/AKfycbw7tLtpkAuv7MY7R5OdiMv7HKoVEYpxENmcscF_hqjsKd0sPZyV0MMzToKNZj39KSUq/exec";
+        "https://script.google.com/macros/s/AKfycbwQoV346VwyEM-0g8-3CAgRmlSzOcn6aZV4WD0KV2dVak0ifEQzSDJR-HHEI-U-jf3p/exec";
       const getScriptURL = () =>
         `${scriptURL}?kelas=${encodeURIComponent(kelas)}`;
       let globalData = [];
@@ -272,7 +272,6 @@
         "PAR-Q",
         "Riwayat Imunisasi HPV* (Kelas 9 Putri)",
       ];
-
       window.showDetail = function (index) {
         const row = globalData[index];
         let html = `<form id="editForm"><table class='table table-bordered table-sm'>`;

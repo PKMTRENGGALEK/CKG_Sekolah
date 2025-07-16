@@ -25,6 +25,19 @@
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
+      table#dataTable {
+        font-size: 0.8rem;
+      }
+
+      .btn-xs {
+        padding: 0.1rem 0.35rem;
+        font-size: 0.7rem;
+        line-height: 1;
+      }
+
+      th, td {
+        vertical-align: middle !important;
+      }
       body {
         padding-top: 70px;
         padding-bottom: 60px;
@@ -94,7 +107,7 @@
       <div class="card shadow">
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table table-bordered table-sm" id="dataTable">
+            <table class="table table-bordered w-100 table-sm" id="dataTable">
               <thead id="tableHead" class="table-success bg-gradient"></thead>
               <tbody id="tableBody">
                 <tr class="text-center">

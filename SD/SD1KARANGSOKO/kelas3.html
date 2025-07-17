@@ -203,7 +203,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-    <script>
+  <script>
       const kelas = "Kelas 3";
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbxsLpMVW96v_64uSzoMhdneojAd_9sWraGc5VqOT5LWVY-wkcjzyxU5kSOarPm_Yn7P6Q/exec";
@@ -292,9 +292,6 @@
         "Tekanan darah diastolik *",
         "Hasil pemeriksaan tajam pendengaran *",
         "Pemeriksaan visus mata (snellen chart)",
-      ];
-
-      const detailFields = [
         "Gigi karies",
         "Gigi hilang/dicabut",
         "Gula Darah Sewaktu (GDS) ",
@@ -306,6 +303,10 @@
         "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
         "Hasil Rapid Test Hepatitis B",
         "Hasil Rapid Test Hepatitis C",
+      ];
+
+      const detailFields = [
+        
       ];
 
       function formatValue(value, header) {
@@ -448,8 +449,19 @@
               "Apakah Anda pernah menerima transfusi darah sebelumnya? *",
               "Apakah Anda pernah didiagnosa atau mendapatkan hasil pemeriksaan kolesterol (lemak darah) tinggi? *",
               "Apakah Anda rutin melakukan olahraga, (seperti jalan cepat, lari, bersepeda, senam, berenang, bulutangkis, sepakbola atau olahraga lainnya)? *",
-              "Hasil pemeriksaan tajam pendengaran *",
-              "Pemeriksaan visus mata (snellen chart)",
+              // "Hasil pemeriksaan tajam pendengaran *",
+              // "Pemeriksaan visus mata (snellen chart)",
+              "Gigi karies",
+              "Gigi hilang/dicabut",
+              "Gula Darah Sewaktu (GDS) ",
+              "Apakah Anda pernah atau sedang mengalami batuk yang tidak sembuh-sembuh selama lebih dari 2 minggu? *",
+              "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+              "Hasil Pemeriksaan BTA",
+              "Apakah Anda merokok dalam setahun terakhir ini? *",
+              "Apakah Anda pernah merokok sebelumnya? *",
+              "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
+              "Hasil Rapid Test Hepatitis B",
+              "Hasil Rapid Test Hepatitis C",
             ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
@@ -465,6 +477,25 @@
             html += `</td></tr>`;
           } else if (
             [
+              "Hasil pemeriksaan tajam pendengaran *",
+              "Pemeriksaan visus mata (snellen chart)",
+             
+            ].includes(field)) 
+            {
+              html += `<tr><th>${field}</th><td>`;
+              ["Normal", "Tidak Normal"].forEach((opt) => {
+                html += `
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                          value === opt ? "checked" : ""
+                        }>
+                  <label class="form-check-label">${opt}</label>
+                </div>`;
+              });
+              html += `</td></tr>`;
+            
+          }else if (
+            [
               "PAR-Q",
               "Kesehatan Reproduksi (Kelas 4-6)",
               "Riwayat Imunisasi Rutin Lengkap",
@@ -473,12 +504,12 @@
             html += `<tr><th>${field}</th><td>`;
             ["Dilaksanakan", "Tidak Dilaksanakan"].forEach((opt) => {
               html += `
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
-                value === opt ? "checked" : ""
-              }>
-        <label class="form-check-label">${opt}</label>
-      </div>`;
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                        value === opt ? "checked" : ""
+                      }>
+                <label class="form-check-label">${opt}</label>
+              </div>`;
             });
             html += `</td></tr>`;
           } else if (
@@ -661,7 +692,7 @@
             headRow.appendChild(th);
           });
           headRow.innerHTML +=
-            "<th>Skrining1</th><th>Skrining2</th><th>Aksi</th>";
+            "<th>Skrining</th><th>Aksi</th>";
           tableHead.appendChild(headRow);
 
           globalData.forEach((row, i) => {
@@ -673,8 +704,7 @@
             });
 
             tr.innerHTML += `
-          <td><button class='btn btn-outline-secondary btn-xs shadow' onclick='showMandiri(${i})'><i class="bi bi-person-vcard"></i>Skrining</button></td>
-          <td><button class='btn btn-outline-info btn-xs shadow' onclick='showDetail(${i})'><i class="bi bi-person-vcard"></i>Skrining</button></td>
+          <td><button class='btn btn-outline-secondary btn-xs shadow' onclick='showMandiri(${i})'><i class="bi bi-person-vcard"></i></button></td>
           <td>${
             row["TTD"] && row["TTD"].startsWith("http")
               ? `<a href="${row["TTD"]}" class='btn btn-xs btn-outline-warning shadow' target="_blank"><i class="bi bi-vector-pen"></i></a>`

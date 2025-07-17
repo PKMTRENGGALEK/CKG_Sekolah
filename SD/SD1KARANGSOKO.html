@@ -24,42 +24,45 @@
     <style>
       body {
         font-family: "Poppins", sans-serif;
-        background-color: #f9fafc;
-        padding-top: 50px;
-
-        padding-bottom: 50px;
+        background: linear-gradient(to bottom, #f0f4ff, #ffffff);
+        padding-top: 70px;
+        padding-bottom: 70px;
       }
 
       .navbar {
         background-color: #ffffff;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       }
 
       .navbar-brand {
-        font-weight: 600;
+        font-weight: 700;
         color: #28a745;
+        font-size: 1.2rem;
       }
 
       .card {
         border: none;
-        border-radius: 12px;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease-in-out;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease-in-out;
+        background: linear-gradient(135deg, #ffffff, #f5f9ff);
       }
 
       .card:hover {
-        transform: translateY(-4px);
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
       }
 
       .card-body i {
-        font-size: 2.8rem;
-        color: #28a745;
+        font-size: 3rem;
+        color: #0d6efd;
+        margin-bottom: 10px;
       }
 
       .card h5 {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 600;
-        margin-top: 12px;
+        color: #333;
       }
 
       .card p {
@@ -68,12 +71,26 @@
       }
 
       .btn-outline-primary {
-        border-radius: 20px;
-        padding: 5px 20px;
+        border-radius: 50px;
+        padding: 6px 22px;
+        background: linear-gradient(to right, #28a745, #3bd97d);
+        color: #fff;
+        border: none;
+        transition: 0.3s;
+      }
+
+      .btn-outline-primary:hover {
+        background: linear-gradient(to right, #3bd97d, #28a745);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .img-fluid {
+        max-height: 280px;
+        filter: drop-shadow(2px 4px 10px rgba(0, 0, 0, 0.1));
       }
 
       footer {
-        background: #fff;
+        background: #ffffff;
         font-size: 14px;
         color: #6c757d;
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
@@ -86,7 +103,7 @@
     <nav class="navbar fixed-top">
       <div class="container d-flex justify-content-between align-items-center">
         <span class="navbar-brand mb-0 h5">
-          <i class="bi bi-bar-chart-line"></i> PKG Siswa SDN 1 Karangsoko
+          <i class="bi bi-bar-chart-line-fill me-1"></i> PKG Siswa SDN 1 Karangsoko
         </span>
         <button
           onclick="history.back()"
@@ -103,19 +120,19 @@
         <!-- Konten dinamis dari JS -->
       </div>
     </div>
-    <!-- Ilustrasi CKG -->
+
+    <!-- Ilustrasi -->
     <div class="text-center my-4">
       <img
         src="../assets/child.png"
         alt="Ilustrasi Cek Kesehatan Gizi"
         class="img-fluid"
-        style="max-height: 300px"
       />
-      <p class="mt-2" style="font-size: 0.95rem; color: #df247b">
-        Pemeriksaan kesehatan dan status gizi secara berkala untuk siswa Sekolah
-        Dasar.
+      <p class="mt-3" style="font-size: 0.95rem; color: #df247b">
+        Pemeriksaan kesehatan dan status gizi secara berkala untuk siswa Sekolah Dasar.
       </p>
     </div>
+
     <!-- Footer -->
     <footer class="footer text-center py-3 fixed-bottom">
       <div class="container">
@@ -128,7 +145,6 @@
 
     <script>
       const container = document.getElementById("kelas-container");
-
       const kelas = [1, 2, 3, 4, 5, 6];
       container.innerHTML = kelas
         .map(
@@ -139,10 +155,9 @@
               <i class="bi bi-people-fill"></i>
               <h5>Kelas ${i}</h5>
               <p>Lihat data skrining siswa kelas ${i}.</p>
-              <a
-                href="SD1KARANGSOKO/kelas${i}.html"
-                class="btn btn-outline-primary btn-sm"
-              >Lihat Data</a>
+              <a href="SD1KARANGSOKO/kelas${i}.html" class="btn btn-outline-primary btn-sm">
+                Lihat Data
+              </a>
             </div>
           </div>
         </div>

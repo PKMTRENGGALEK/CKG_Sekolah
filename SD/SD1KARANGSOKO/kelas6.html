@@ -235,7 +235,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-    <script>
+     <script>
       const kelas = "Kelas 6";
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbxsLpMVW96v_64uSzoMhdneojAd_9sWraGc5VqOT5LWVY-wkcjzyxU5kSOarPm_Yn7P6Q/exec";
@@ -308,7 +308,7 @@
       };
       const nothing = ["Tinggi", "Berat", "Lingkar Perut", "Lingkar Lengan"];
       const mandiriFields = [
-        "Kesehatan Reproduksi (Kelas 4-6)",
+        "Kesehatan Reproduksi",
         "Riwayat Imunisasi Rutin Lengkap",
         "PAR-Q",
         "Apakah penyandang disabilitas? *",
@@ -326,7 +326,7 @@
         "Pemeriksaan visus mata (snellen chart)",
         "Gigi karies",
         "Gigi hilang/dicabut",
-        "Gigi goyang",
+        "Gigi goyang/Kesundulan",
         "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
         "Apakah orang tua memiliki riwayat penyakit diabetes? *",
         "Gula Darah Sewaktu (GDS) ",
@@ -509,7 +509,7 @@
             });
             html += `</td></tr>`;
           } else if (
-            ["Gigi karies", "Gigi hilang/dicabut", "Gigi goyang"].includes(
+            ["Gigi karies", "Gigi hilang/dicabut", "Gigi goyang/Kesundulan"].includes(
               field
             )
           ) {
@@ -530,9 +530,31 @@
             <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
           </div>
         </td></tr>`;
+        } else if (
+            ["Hasil pemeriksaan tajam pendengaran *"].includes(
+              field
+            )
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+
+            ["Normal", "Gangguan", "Rujukan"].forEach((opt) => {
+              const isChecked = (value || "").includes(opt) ? "checked" : "";
+              html += `
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="${field}[]" value="${opt}" ${isChecked}>
+              <label class="form-check-label">${opt}</label>
+            </div>`;
+            });
+
+            html += `
+          <div class="form-group mt-2">
+            <label for="${field}_keterangan">Keterangan:</label>
+            <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+          </div>
+        </td></tr>`;
           } else if (
             [
-              "Hasil pemeriksaan tajam pendengaran *",
+              // "Hasil pemeriksaan tajam pendengaran *",
               "Pemeriksaan visus mata (snellen chart)",
             ].includes(field)
           ) {
@@ -559,7 +581,7 @@
           } else if (
             [
               "PAR-Q",
-              "Kesehatan Reproduksi (Kelas 4-6)",
+              "Kesehatan Reproduksi",
               "Riwayat Imunisasi Rutin Lengkap",
             ].includes(field)
           ) {

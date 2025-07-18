@@ -247,7 +247,7 @@
         once: true,
       });
     </script>
-    <script>
+     <script>
       const kelas = "Kelas 2";
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbxsLpMVW96v_64uSzoMhdneojAd_9sWraGc5VqOT5LWVY-wkcjzyxU5kSOarPm_Yn7P6Q/exec";
@@ -320,7 +320,7 @@
       };
       const nothing = ["Tinggi", "Berat", "Lingkar Perut", "Lingkar Lengan"];
       const mandiriFields = [
-        "Kesehatan Reproduksi (Kelas 4-6)",
+        "Kesehatan Reproduksi",
         "Riwayat Imunisasi Rutin Lengkap",
         "PAR-Q",
         "Apakah penyandang disabilitas? *",
@@ -338,7 +338,7 @@
         "Pemeriksaan visus mata (snellen chart)",
         "Gigi karies",
         "Gigi hilang/dicabut",
-        "Gigi goyang",
+        "Gigi goyang/Kesundulan",
         "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
         "Apakah orang tua memiliki riwayat penyakit diabetes? *",
         "Gula Darah Sewaktu (GDS) ",
@@ -378,36 +378,36 @@
           } else if (field.trim() === "Hasil Rapid Test Hepatitis B") {
             ["HBsAg Non Reaktif", "HBsAg Reaktif"].forEach((opt) => {
               html += `
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
                 value === opt ? "checked" : ""
               }>
-            <label class="form-check-label">${opt}</label>
-          </div>`;
+                <label class="form-check-label">${opt}</label>
+              </div>`;
             });
 
             // Khusus Hasil Rapid Test Hepatitis C
           } else if (field.trim() === "Hasil Rapid Test Hepatitis C") {
             ["Anti HCV Non Reaktif", "Anti HCV Reaktif"].forEach((opt) => {
               html += `
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
                 value === opt ? "checked" : ""
               }>
-            <label class="form-check-label">${opt}</label>
-          </div>`;
+                <label class="form-check-label">${opt}</label>
+              </div>`;
             });
 
             // Default Ya/Tidak
           } else if (["Ya", "Tidak", ""].includes(value)) {
             ["Ya", "Tidak"].forEach((opt) => {
               html += `
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
                 value === opt ? "checked" : ""
               }>
-            <label class="form-check-label">${opt}</label>
-          </div>`;
+                <label class="form-check-label">${opt}</label>
+              </div>`;
             });
 
             // Jika nilai angka 0-10 (opsional jika digunakan)
@@ -418,12 +418,12 @@
           ) {
             for (let i = 0; i <= 10; i++) {
               html += `
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="${field}" value="${i}" ${
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${i}" ${
                 Number(value) === i ? "checked" : ""
               }>
-            <label class="form-check-label">${i}</label>
-          </div>`;
+                <label class="form-check-label">${i}</label>
+              </div>`;
             }
 
             // Default: input teks biasa
@@ -435,11 +435,11 @@
         });
 
         html += `</table></form>
-        <div class="text-end">
-          <button type="button" class="btn btn-success btn-sm" onclick="submitEdit(${index})">
-            <i class="bi bi-save"></i> Simpan Perubahan
-          </button>
-        </div>`;
+            <div class="text-end">
+              <button type="button" class="btn btn-success btn-sm" onclick="submitEdit(${index})">
+                <i class="bi bi-save"></i> Simpan Perubahan
+              </button>
+            </div>`;
 
         document.getElementById("detailContent").innerHTML = html;
         new bootstrap.Modal(document.getElementById("detailModal")).show();
@@ -512,16 +512,16 @@
             html += `<tr><th>${field}</th><td>`;
             ["Ya", "Tidak"].forEach((opt) => {
               html += `
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
                 value === opt ? "checked" : ""
               }>
-          <label class="form-check-label">${opt}</label>
-        </div>`;
+              <label class="form-check-label">${opt}</label>
+            </div>`;
             });
             html += `</td></tr>`;
           } else if (
-            ["Gigi karies", "Gigi hilang/dicabut", "Gigi goyang"].includes(
+            ["Gigi karies", "Gigi hilang/dicabut", "Gigi goyang/Kesundulan"].includes(
               field
             )
           ) {
@@ -530,21 +530,43 @@
             ["Ya", "Tidak", "Rujukan"].forEach((opt) => {
               const isChecked = (value || "").includes(opt) ? "checked" : "";
               html += `
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" name="${field}[]" value="${opt}" ${isChecked}>
-          <label class="form-check-label">${opt}</label>
-        </div>`;
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="${field}[]" value="${opt}" ${isChecked}>
+              <label class="form-check-label">${opt}</label>
+            </div>`;
             });
 
             html += `
-      <div class="form-group mt-2">
-        <label for="${field}_keterangan">Keterangan:</label>
-        <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
-      </div>
-    </td></tr>`;
+          <div class="form-group mt-2">
+            <label for="${field}_keterangan">Keterangan:</label>
+            <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+          </div>
+        </td></tr>`;
+        } else if (
+            ["Hasil pemeriksaan tajam pendengaran *"].includes(
+              field
+            )
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+
+            ["Normal", "Gangguan", "Rujukan"].forEach((opt) => {
+              const isChecked = (value || "").includes(opt) ? "checked" : "";
+              html += `
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="${field}[]" value="${opt}" ${isChecked}>
+              <label class="form-check-label">${opt}</label>
+            </div>`;
+            });
+
+            html += `
+          <div class="form-group mt-2">
+            <label for="${field}_keterangan">Keterangan:</label>
+            <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+          </div>
+        </td></tr>`;
           } else if (
             [
-              "Hasil pemeriksaan tajam pendengaran *",
+              // "Hasil pemeriksaan tajam pendengaran *",
               "Pemeriksaan visus mata (snellen chart)",
             ].includes(field)
           ) {
@@ -552,38 +574,38 @@
 
             ["Visus 6/6 - 6/12", "Visus <6/12"].forEach((opt) => {
               html += `
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
                 value === opt ? "checked" : ""
               }>
-                      <label class="form-check-label">${opt}</label>
-                    </div>`;
+                          <label class="form-check-label">${opt}</label>
+                        </div>`;
             });
 
             // Tambahan input untuk keterangan
             html += `
-                  <div class="form-group mt-2">
-                    <label for="${field}_keterangan">Keterangan:</label>
-                    <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
-                  </div>`;
+                      <div class="form-group mt-2">
+                        <label for="${field}_keterangan">Keterangan:</label>
+                        <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+                      </div>`;
 
             html += `</td></tr>`;
           } else if (
             [
               "PAR-Q",
-              "Kesehatan Reproduksi (Kelas 4-6)",
+              "Kesehatan Reproduksi",
               "Riwayat Imunisasi Rutin Lengkap",
             ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
             ["Dilaksanakan", "Tidak Dilaksanakan"].forEach((opt) => {
               html += `
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
                 value === opt ? "checked" : ""
               }>
-                  <label class="form-check-label">${opt}</label>
-                </div>`;
+                      <label class="form-check-label">${opt}</label>
+                    </div>`;
             });
             html += `</td></tr>`;
           } else if (
@@ -604,12 +626,12 @@
               "Hampir setiap hari",
             ].forEach((opt) => {
               html += `
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
                 value === opt ? "checked" : ""
               }>
-          <label class="form-check-label">${opt}</label>
-        </div>`;
+              <label class="form-check-label">${opt}</label>
+            </div>`;
             });
             html += `</td></tr>`;
           } else {
@@ -618,11 +640,11 @@
         });
 
         html += `</table></form>
-        <div class="text-end">
-          <button type="button" class="btn btn-primary btn-sm" onclick="submitMandiri(${index})">
-            <i class="bi bi-save"></i> Simpan Data
-          </button>
-        </div>`;
+            <div class="text-end">
+              <button type="button" class="btn btn-primary btn-sm" onclick="submitMandiri(${index})">
+                <i class="bi bi-save"></i> Simpan Data
+              </button>
+            </div>`;
 
         document.getElementById("detailContent").innerHTML = html;
         new bootstrap.Modal(document.getElementById("detailModal")).show();
@@ -783,13 +805,13 @@
             });
 
             tr.innerHTML += `
-            <td><button class='btn btn-outline-secondary btn-xs shadow' onclick='showMandiri(${i})'><i class="bi bi-person-vcard"></i></button></td>
-            <td>${
-              row["TTD"] && row["TTD"].startsWith("http")
-                ? `<a href="${row["TTD"]}" class='btn btn-xs btn-outline-warning shadow' target="_blank"><i class="bi bi-vector-pen"></i></a>`
-                : `<button class="btn btn-xs shadow btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`
-            }</td>
-          `;
+                <td><button class='btn btn-outline-secondary btn-xs shadow' onclick='showMandiri(${i})'><i class="bi bi-person-vcard"></i></button></td>
+                <td>${
+                  row["TTD"] && row["TTD"].startsWith("http")
+                    ? `<a href="${row["TTD"]}" class='btn btn-xs btn-outline-warning shadow' target="_blank"><i class="bi bi-vector-pen"></i></a>`
+                    : `<button class="btn btn-xs shadow btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`
+                }</td>
+              `;
 
             tableBody.appendChild(tr);
           });

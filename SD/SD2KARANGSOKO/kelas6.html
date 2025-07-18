@@ -21,40 +21,105 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- SheetJS -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
       body {
         padding-top: 70px;
-        padding-bottom: 60px;
-        background-color: #f8f9fa;
+        padding-bottom: 70px;
+        background: linear-gradient(to bottom right, #f2fcf4, #ffffff);
+        font-family: "Segoe UI", sans-serif;
       }
+
+      .navbar {
+        background: linear-gradient(to right, #ffffff, #e7fbe8);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        color: #198754;
+        font-size: 1rem;
+      }
+
+      .btn-outline-secondary {
+        border-radius: 30px;
+        font-size: 0.85rem;
+      }
+
+      .card.shadow {
+        border-radius: 12px;
+        border: none;
+        background-color: #ffffff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      table#dataTable {
+        font-size: 0.8rem;
+        border-color: #dee2e6;
+      }
+
+      thead th {
+        background: #198754 !important;
+        color: #fff !important;
+        font-weight: 500;
+        font-size: 0.85rem;
+      }
+
+      tbody tr:hover {
+        background-color: #f1fdf5;
+      }
+
+      .btn-xs {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.7rem;
+      }
+
+      th.hide-col,
+      td.hide-col {
+        display: none;
+      }
+
       .table-sm td,
       .table-sm th {
         font-size: 12px !important;
       }
-      thead th {
-        /*position: sticky;*/
-        top: 0;
-        background-color: #212529;
-        color: white;
-        z-index: 2;
-      }
+
       #signaturePad {
+        width: 100%;
+        height: 150px;
         touch-action: none;
         cursor: crosshair;
-        border: 1px solid #ccc;
+        border: 1px dashed #ccc;
+        border-radius: 6px;
+        display: block;
+      }
+
+      /* Modal improvement */
+      .modal-content {
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-outline-success {
+        border-radius: 20px;
+      }
+
+      footer {
+        background: #f8f9fa;
+        font-size: 13px;
+        color: #6c757d;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
       }
     </style>
   </head>
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-light bg-white bg-gradient fixed-top shadow">
+    <nav class="navbar fixed-top">
       <div class="container d-flex justify-content-between align-items-center">
-        <span class="navbar-brand mb-0 h5 text-success">
-          <i class="bi bi-bar-chart-line"></i> Register PKG Siswa Sekolah Dasar
-          Negeri 2 Karangsoko
+        <span class="navbar-brand">
+          <i class="bi bi-bar-chart-line-fill"></i> Register PKG Siswa SDN 2
+          Karangsoko
         </span>
         <button
           onclick="history.back()"
@@ -66,35 +131,20 @@
     </nav>
 
     <div class="container mt-4">
-      <!-- Header + Button -->
+      <!-- Header -->
       <div
         class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
       >
         <h4 class="text-success mb-0">
-          <u>Data Siswa Kelas 6 </u>
+          <u>Data Siswa Kelas 6</u>
         </h4>
-        <div class="d-flex gap-2">
-          <button
-            class="btn btn-sm btn-outline-success shadow"
-            id="importExcelBtn"
-          >
-            <i class="bi bi-upload"></i> Import Excel
-          </button>
-          <a
-            href="https://docs.google.com/spreadsheets/d/1NwZ2Mxnqr9IT24-kcBkEesOqQZkQ-8yhEezAGi2SFGY/edit?usp=sharing"
-            target="_blank"
-            class="btn btn-outline-danger btn-sm shadow"
-          >
-            <i class="bi bi-file-earmark-richtext"></i> View Source Data
-          </a>
-        </div>
       </div>
 
-      <!-- Tabel -->
+      <!-- Table -->
       <div class="card shadow">
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table table-bordered table-sm" id="dataTable">
+            <table id="dataTable" class="table table-sm table-bordered w-100">
               <thead id="tableHead" class="table-success bg-gradient"></thead>
               <tbody id="tableBody">
                 <tr class="text-center">
@@ -113,11 +163,11 @@
       </div>
     </div>
 
-    <!-- Modal Detail Data  -->
+    <!-- Modal Detail -->
     <div class="modal fade" id="detailModal" tabindex="-1">
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header bg-success text-white">
             <h5 class="modal-title">Detail Skrining</h5>
             <button
               type="button"
@@ -146,13 +196,10 @@
               ></button>
             </div>
             <div class="modal-body">
-              <canvas
-                id="signaturePad"
-                style="border: 1px solid #ccc; width: 100%; height: 150px"
-              ></canvas>
+              <canvas id="signaturePad" width="100%" height="150"></canvas>
               <button
                 type="button"
-                class="btn btn-sm btn-secondary mt-2"
+                class="btn btn-sm btn-outline-secondary mt-2"
                 id="clearBtn"
               >
                 Bersihkan
@@ -160,12 +207,14 @@
             </div>
             <div class="modal-footer">
               <input type="hidden" id="rowIndex" />
-              <button type="submit" class="btn btn-primary">Simpan TTD</button>
+              <button type="submit" class="btn btn-success">Simpan TTD</button>
             </div>
           </form>
         </div>
       </div>
     </div>
+
+    <!-- File Input -->
     <input
       type="file"
       id="excelFileInput"
@@ -174,7 +223,7 @@
     />
 
     <!-- Footer -->
-    <footer class="bg-light text-dark text-center py-2 fixed-bottom">
+    <footer class="text-center py-2 fixed-bottom">
       <div class="container">
         &copy; 2025 Puskesmas Trenggalek | Aplikasi Skrining Siswa
       </div>
@@ -187,13 +236,12 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-      const kelas = "Kelas 6"; // ✅ Sheet yang digunakan
+      const kelas = "Kelas 6";
       const scriptURL =
         "https://script.google.com/macros/s/AKfycby8mzFKLXovu0v2phS1J__EE1ZJz0oZSAGTP_0MzF4Y2jnL_R4_MBnMMVuP2fmgmCvp/exec";
       const getScriptURL = () =>
         `${scriptURL}?kelas=${encodeURIComponent(kelas)}`;
       let globalData = [];
-
       const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
       const canvas = document.getElementById("signaturePad");
       const ctx = canvas.getContext("2d");
@@ -258,37 +306,129 @@
       document.getElementById("clearBtn").onclick = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       };
-
-      const detailFields = [
-        "Lingkar Lengan",
-        "Risiko Tuberkulosis",
-        "Gejala DM Anak",
-        "Risiko Kesehatan Jiwa",
-        "Kesehatan Reproduksi (Kelas 4-6)",
-        "Perilaku Merokok",
-        "Risiko Hepatitis B",
+      const nothing = ["Tinggi", "Berat", "Lingkar Perut", "Lingkar Lengan"];
+      const mandiriFields = [
+        "Kesehatan Reproduksi",
         "Riwayat Imunisasi Rutin Lengkap",
-        "Aktivitas Fisik  kelas 4-6*",
         "PAR-Q",
+        "Apakah penyandang disabilitas? *",
+        "Apakah Anda memiliki ibu kandung/saudara sekandung yang menderita Hepatitis B? *",
+        "Apakah Anda pernah menerima transfusi darah sebelumnya? *",
+        "Apakah Anda pernah didiagnosa atau mendapatkan hasil pemeriksaan kolesterol (lemak darah) tinggi? *",
+        "Dalam 2 minggu terakhir, seberapa sering anda kurang/ tidak bersemangat dalam melakukan kegiatan sehari-hari? *",
+        "Dalam 2 minggu terakhir, seberapa sering anda merasa murung, tertekan, atau putus asa? *",
+        "Dalam 2 minggu terakhir, seberapa sering anda merasa gugup, cemas, atau gelisah? *",
+        "Dalam 2 minggu terakhir, seberapa sering anda tidak mampu mengendalikan rasa khawatir? *",
+        "Apakah Anda rutin melakukan olahraga, (seperti jalan cepat, lari, bersepeda, senam, berenang, bulutangkis, sepakbola atau olahraga lainnya)? *",
+        "Tekanan Darah Sistolik *",
+        "Tekanan darah diastolik *",
+        "Hasil pemeriksaan tajam pendengaran *",
+        "Pemeriksaan visus mata (snellen chart)",
+        "Gigi karies",
+        "Gigi hilang/dicabut",
+        "Gigi goyang/Kesundulan",
+        "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
+        "Apakah orang tua memiliki riwayat penyakit diabetes? *",
+        "Gula Darah Sewaktu (GDS) ",
+        "Apakah Anda pernah atau sedang mengalami batuk yang tidak sembuh-sembuh selama lebih dari 2 minggu? *",
+        "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+        "Hasil Pemeriksaan BTA",
+        "Apakah Anda merokok dalam setahun terakhir ini? *",
+        "Apakah Anda pernah merokok sebelumnya? *",
+        "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
+        "Hasil Rapid Test Hepatitis B",
+        "Hasil Rapid Test Hepatitis C",
       ];
+
+      const detailFields = [];
+
+      function formatValue(value, header) {
+        if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+          const date = new Date(value);
+          return date.toLocaleDateString("id-ID");
+        }
+        return value;
+      }
 
       window.showDetail = function (index) {
         const row = globalData[index];
         let html = `<form id="editForm"><table class='table table-bordered table-sm'>`;
+
         detailFields.forEach((field) => {
-          html += `<tr>
-      <th>${field}</th>
-      <td><input type="text" class="form-control form-control-sm" name="${field}" value="${
-            row[field] || ""
-          }"></td>
-    </tr>`;
+          const value = row[field] || "";
+          html += `<tr><th>${field}</th><td>`;
+
+          // Khusus Gula Darah Sewaktu
+          if (field.trim() === "Gula Darah Sewaktu (GDS)") {
+            html += `<input type="text" class="form-control form-control-sm" name="${field}" value="${value}">`;
+
+            // Khusus Hasil Rapid Test Hepatitis B
+          } else if (field.trim() === "Hasil Rapid Test Hepatitis B") {
+            ["HBsAg Non Reaktif", "HBsAg Reaktif"].forEach((opt) => {
+              html += `
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                <label class="form-check-label">${opt}</label>
+              </div>`;
+            });
+
+            // Khusus Hasil Rapid Test Hepatitis C
+          } else if (field.trim() === "Hasil Rapid Test Hepatitis C") {
+            ["Anti HCV Non Reaktif", "Anti HCV Reaktif"].forEach((opt) => {
+              html += `
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                <label class="form-check-label">${opt}</label>
+              </div>`;
+            });
+
+            // Default Ya/Tidak
+          } else if (["Ya", "Tidak", ""].includes(value)) {
+            ["Ya", "Tidak"].forEach((opt) => {
+              html += `
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                <label class="form-check-label">${opt}</label>
+              </div>`;
+            });
+
+            // Jika nilai angka 0-10 (opsional jika digunakan)
+          } else if (
+            !isNaN(value) &&
+            Number(value) >= 0 &&
+            Number(value) <= 10
+          ) {
+            for (let i = 0; i <= 10; i++) {
+              html += `
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="${field}" value="${i}" ${
+                Number(value) === i ? "checked" : ""
+              }>
+                <label class="form-check-label">${i}</label>
+              </div>`;
+            }
+
+            // Default: input teks biasa
+          } else {
+            html += `<input type="text" class="form-control form-control-sm" name="${field}" value="${value}">`;
+          }
+
+          html += `</td></tr>`;
         });
+
         html += `</table></form>
-    <div class="text-end">
-      <button type="button" class="btn btn-success btn-sm" onclick="submitEdit(${index})">
-        <i class="bi bi-save"></i> Simpan Perubahan
-      </button>
-    </div>`;
+            <div class="text-end">
+              <button type="button" class="btn btn-success btn-sm" onclick="submitEdit(${index})">
+                <i class="bi bi-save"></i> Simpan Perubahan
+              </button>
+            </div>`;
+
         document.getElementById("detailContent").innerHTML = html;
         new bootstrap.Modal(document.getElementById("detailModal")).show();
       };
@@ -302,19 +442,20 @@
         Object.keys(row).forEach((k) => {
           if (!detailFields.includes(k)) payload.append(k, row[k]);
         });
-        detailFields.forEach((field) => {
-          payload.append(field, formData.get(field));
-        });
+        detailFields.forEach((field) =>
+          payload.append(field, formData.get(field))
+        );
 
         payload.append("action", "edit");
         payload.append("index", index);
-        payload.append("kelas", kelas); // ✅ kirim kelas
+        payload.append("kelas", kelas);
 
         Swal.fire({
           title: "Menyimpan...",
           allowOutsideClick: false,
           didOpen: () => Swal.showLoading(),
         });
+
         try {
           const res = await fetch(scriptURL, { method: "POST", body: payload });
           const result = await res.json();
@@ -328,86 +469,214 @@
         }
       };
 
-      async function loadData() {
-        try {
-          const res = await fetch(getScriptURL());
-          const result = await res.json();
-          globalData = result.data || result;
+      window.showMandiri = function (index) {
+        const row = globalData[index];
+        let html = `<form id="mandiriForm"><table class='table table-bordered table-sm'>`;
 
-          const headers = (
-            result.headers || Object.keys(globalData[0] || {})
-          ).filter((h) => h !== "TTD" && !detailFields.includes(h));
+        mandiriFields.forEach((field) => {
+          const value = row[field] || "";
+          if (
+            [
+              "Apakah penyandang disabilitas? *",
+              "Apakah Anda memiliki ibu kandung/saudara sekandung yang menderita Hepatitis B? *",
+              "Apakah Anda pernah menerima transfusi darah sebelumnya? *",
+              "Apakah Anda pernah didiagnosa atau mendapatkan hasil pemeriksaan kolesterol (lemak darah) tinggi? *",
+              "Apakah Anda rutin melakukan olahraga, (seperti jalan cepat, lari, bersepeda, senam, berenang, bulutangkis, sepakbola atau olahraga lainnya)? *",
+              // "Hasil pemeriksaan tajam pendengaran *",
+              // "Pemeriksaan visus mata (snellen chart)",
+              "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
+              "Apakah orang tua memiliki riwayat penyakit diabetes? *",
+              // "Gula Darah Sewaktu (GDS) ",
+              "Apakah Anda pernah atau sedang mengalami batuk yang tidak sembuh-sembuh selama lebih dari 2 minggu? *",
+              "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+              "Hasil Pemeriksaan BTA",
+              "Apakah Anda merokok dalam setahun terakhir ini? *",
+              "Apakah Anda pernah merokok sebelumnya? *",
+              "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
+              "Hasil Rapid Test Hepatitis B",
+              "Hasil Rapid Test Hepatitis C",
+            ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+            ["Ya", "Tidak"].forEach((opt) => {
+              html += `
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+              <label class="form-check-label">${opt}</label>
+            </div>`;
+            });
+            html += `</td></tr>`;
+          } else if (
+            ["Gigi karies", "Gigi hilang/dicabut", "Gigi goyang/Kesundulan"].includes(
+              field
+            )
+          ) {
+            html += `<tr><th>${field}</th><td>`;
 
-          const tableHead = document.getElementById("tableHead");
-          const tableBody = document.getElementById("tableBody");
-          tableHead.innerHTML = "";
-          tableBody.innerHTML = "";
-
-          if (globalData.length === 0) {
-            tableHead.innerHTML = "<tr><th class='text-center'>Info</th></tr>";
-            tableBody.innerHTML =
-              "<tr><td class='text-center text-muted'>Data kosong</td></tr>";
-            return;
-          }
-
-          const headRow = document.createElement("tr");
-          headers.forEach((h) => {
-            const th = document.createElement("th");
-            th.textContent = h;
-            headRow.appendChild(th);
-          });
-          headRow.innerHTML += "<th>Detail Skrining</th><th>Aksi</th>";
-          tableHead.appendChild(headRow);
-
-          globalData.forEach((row, i) => {
-            const tr = document.createElement("tr");
-            headers.forEach((h) => {
-              const td = document.createElement("td");
-              td.innerHTML = formatValue(row[h], h);
-              tr.appendChild(td);
+            ["Ya", "Tidak", "Rujukan"].forEach((opt) => {
+              const isChecked = (value || "").includes(opt) ? "checked" : "";
+              html += `
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="${field}[]" value="${opt}" ${isChecked}>
+              <label class="form-check-label">${opt}</label>
+            </div>`;
             });
 
-            const detailTd = document.createElement("td");
-            detailTd.innerHTML = `<button class='btn btn-sm btn-outline-info' onclick='showDetail(${i})'><i class="bi bi-binoculars"></i> View</button>`;
-            tr.appendChild(detailTd);
+            html += `
+          <div class="form-group mt-2">
+            <label for="${field}_keterangan">Keterangan:</label>
+            <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+          </div>
+        </td></tr>`;
+        } else if (
+            ["Hasil pemeriksaan tajam pendengaran *"].includes(
+              field
+            )
+          ) {
+            html += `<tr><th>${field}</th><td>`;
 
-            const aksiTd = document.createElement("td");
-            if (row["TTD"] && row["TTD"].startsWith("http")) {
-              aksiTd.innerHTML = `<a href="${row["TTD"]}" class='btn btn-sm btn-outline-warning' target="_blank"><i class="bi bi-vector-pen"></i></a>`;
-            } else {
-              aksiTd.innerHTML = `<button class="btn btn-sm btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`;
-            }
-            tr.appendChild(aksiTd);
-            tableBody.appendChild(tr);
-          });
+            ["Normal", "Gangguan", "Rujukan"].forEach((opt) => {
+              const isChecked = (value || "").includes(opt) ? "checked" : "";
+              html += `
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="${field}[]" value="${opt}" ${isChecked}>
+              <label class="form-check-label">${opt}</label>
+            </div>`;
+            });
 
-          $("#dataTable").DataTable({
-            destroy: true,
-            responsive: true,
-            order: [],
-            language: {
-              url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json",
-            },
-            columnDefs: [{ targets: "_all", className: "text-center" }],
-          });
-        } catch (error) {
-          console.error(error);
-          Swal.fire(
-            "Gagal",
-            "Gagal memuat data. Periksa koneksi atau scriptURL.",
-            "error"
+            html += `
+          <div class="form-group mt-2">
+            <label for="${field}_keterangan">Keterangan:</label>
+            <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+          </div>
+        </td></tr>`;
+          } else if (
+            [
+              // "Hasil pemeriksaan tajam pendengaran *",
+              "Pemeriksaan visus mata (snellen chart)",
+            ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+
+            ["Visus 6/6 - 6/12", "Visus <6/12"].forEach((opt) => {
+              html += `
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                          <label class="form-check-label">${opt}</label>
+                        </div>`;
+            });
+
+            // Tambahan input untuk keterangan
+            html += `
+                      <div class="form-group mt-2">
+                        <label for="${field}_keterangan">Keterangan:</label>
+                        <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+                      </div>`;
+
+            html += `</td></tr>`;
+          } else if (
+            [
+              "PAR-Q",
+              "Kesehatan Reproduksi",
+              "Riwayat Imunisasi Rutin Lengkap",
+            ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+            ["Dilaksanakan", "Tidak Dilaksanakan"].forEach((opt) => {
+              html += `
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                      <label class="form-check-label">${opt}</label>
+                    </div>`;
+            });
+            html += `</td></tr>`;
+          } else if (
+            [
+              "Dalam 2 minggu terakhir, seberapa sering anda kurang/ tidak bersemangat dalam melakukan kegiatan sehari-hari? *",
+              "Dalam 2 minggu terakhir, seberapa sering anda merasa murung, tertekan, atau putus asa? *",
+              "Dalam 2 minggu terakhir, seberapa sering anda merasa gugup, cemas, atau gelisah? *",
+              "Dalam 2 minggu terakhir, seberapa sering anda tidak mampu mengendalikan rasa khawatir? *",
+            ]
+              .map((f) => f.trim().replaceAll("\u00A0", " "))
+              .includes(field.trim().replaceAll("\u00A0", " "))
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+            [
+              "Tidak sama sekali",
+              "Kurang dari 1 minggu",
+              "Lebih dari 1 minggu",
+              "Hampir setiap hari",
+            ].forEach((opt) => {
+              html += `
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+              <label class="form-check-label">${opt}</label>
+            </div>`;
+            });
+            html += `</td></tr>`;
+          } else {
+            html += `<tr><th>${field}</th><td><input type="text" class="form-control form-control-sm" name="${field}" value="${value}"></td></tr>`;
+          }
+        });
+
+        html += `</table></form>
+            <div class="text-end">
+              <button type="button" class="btn btn-primary btn-sm" onclick="submitMandiri(${index})">
+                <i class="bi bi-save"></i> Simpan Data
+              </button>
+            </div>`;
+
+        document.getElementById("detailContent").innerHTML = html;
+        new bootstrap.Modal(document.getElementById("detailModal")).show();
+      };
+
+      window.submitMandiri = async function (index) {
+        const formEl = document.getElementById("mandiriForm");
+        const formData = new FormData(formEl);
+        const row = globalData[index];
+        const payload = new URLSearchParams();
+
+        Object.keys(row).forEach((k) => {
+          if (!mandiriFields.includes(k)) payload.append(k, row[k]);
+        });
+        mandiriFields.forEach((field) => {
+          const values = formData.getAll(`${field}[]`);
+          payload.append(
+            field,
+            values.length > 0 ? values.join(", ") : formData.get(field)
           );
-        }
-      }
+        });
 
-      function formatValue(value, header) {
-        if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-          const date = new Date(value);
-          return date.toLocaleDateString("id-ID");
-        }
-        return value;
-      }
+        payload.append("action", "edit");
+        payload.append("index", index);
+        payload.append("kelas", kelas);
 
+        Swal.fire({
+          title: "Menyimpan...",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+
+        try {
+          const res = await fetch(scriptURL, { method: "POST", body: payload });
+          const result = await res.json();
+          Swal.fire(
+            "Berhasil",
+            result.message || "Data berhasil disimpan!",
+            "success"
+          ).then(() => location.reload());
+        } catch {
+          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
+        }
+      };
       function isCanvasEmpty(canvas) {
         const blank = document.createElement("canvas");
         blank.width = canvas.width;
@@ -474,60 +743,89 @@
           }
         });
 
-      $(document).on("click", "#importExcelBtn", function () {
-        $("#excelFileInput").click();
-      });
+      async function loadData() {
+        try {
+          const res = await fetch(getScriptURL());
+          const result = await res.json();
+          globalData = result.data || result;
 
-      $("#excelFileInput").on("change", function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
+          const headers = (
+            result.headers || Object.keys(globalData[0] || {})
+          ).filter(
+            (h) =>
+              h !== "TTD" &&
+              h.trim().toUpperCase() !== "KELAS" &&
+              !detailFields.includes(h) &&
+              !mandiriFields.includes(h) &&
+              !nothing.includes(h)
+          );
 
-        Swal.fire({
-          title: "Mengimpor...",
-          text: "Mohon tunggu hingga proses selesai.",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
+          const tableHead = document.getElementById("tableHead");
+          const tableBody = document.getElementById("tableBody");
+          tableHead.innerHTML = "";
+          tableBody.innerHTML = "";
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+          if (globalData.length === 0) {
+            tableHead.innerHTML = "<tr><th class='text-center'>Info</th></tr>";
+            tableBody.innerHTML =
+              "<tr><td class='text-center text-muted'>Data kosong</td></tr>";
+            return;
+          }
 
-          const promises = jsonData.map((item) => {
-            const formData = new URLSearchParams();
-            for (const key in item) {
-              formData.append(key, item[key]);
-            }
-            formData.append("action", "add");
-            formData.append("kelas", kelas); // ✅ kirim kelas juga
+          const headRow = document.createElement("tr");
+          headers.forEach((h) => {
+            const th = document.createElement("th");
+            th.textContent = h;
+            if (h === "Nama") th.style.minWidth = "160px";
+            headRow.appendChild(th);
+          });
+          headRow.innerHTML += "<th>Skrining</th><th>Aksi</th>";
+          tableHead.appendChild(headRow);
 
-            return fetch(scriptURL, {
-              method: "POST",
-              body: formData,
+          globalData.forEach((row, i) => {
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-aos", "fade-up");
+
+            headers.forEach((h) => {
+              const td = document.createElement("td");
+              td.innerHTML = formatValue(row[h], h);
+              tr.appendChild(td);
             });
+
+            tr.innerHTML += `
+                <td><button class='btn btn-outline-secondary btn-xs shadow' onclick='showMandiri(${i})'><i class="bi bi-person-vcard"></i></button></td>
+                <td>${
+                  row["TTD"] && row["TTD"].startsWith("http")
+                    ? `<a href="${row["TTD"]}" class='btn btn-xs btn-outline-warning shadow' target="_blank"><i class="bi bi-vector-pen"></i></a>`
+                    : `<button class="btn btn-xs shadow btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`
+                }</td>
+              `;
+
+            tableBody.appendChild(tr);
           });
 
-          Promise.all(promises)
-            .then(() => {
-              Swal.fire(
-                "Sukses",
-                "Data Excel berhasil diimpor!",
-                "success"
-              ).then(() => location.reload());
-            })
-            .catch((err) => {
-              console.error("Gagal kirim data Excel", err);
-              Swal.fire("Gagal", "Terjadi kesalahan saat impor data.", "error");
-            });
-        };
-        reader.readAsArrayBuffer(file);
-      });
+          $("#dataTable").DataTable({
+            destroy: true,
+            responsive: true,
+            paging: false,
+            searching: true,
+            order: [],
+            language: {
+              url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json",
+            },
+            columnDefs: [{ targets: "_all", className: "text-center" }],
+          });
+        } catch (error) {
+          console.error(error);
+          Swal.fire(
+            "Gagal",
+            "Gagal memuat data. Periksa koneksi atau scriptURL.",
+            "error"
+          );
+        }
+      }
 
-      loadData(); // 🚀 panggil saat pertama kali
+      loadData();
     </script>
   </body>
 </html>

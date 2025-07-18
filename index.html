@@ -32,7 +32,7 @@
     <style>
       body {
         font-family: "Poppins", sans-serif;
-        background: linear-gradient(to bottom, #eaf0f7 0%, #f8f9fa 100%);
+         background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
         padding-top: 80px;
         padding-bottom: 80px; /* ✅ ini ditambahkan */
       }
@@ -119,11 +119,13 @@
         height: 100%;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         transition: all 0.3s ease-in-out;
+        
       }
 
       .custom-card:hover {
-        transform: translateY(-4px);
-      }
+          transform: translateY(-6px);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
 
       .card-label {
         position: absolute;
@@ -187,6 +189,11 @@
           transform: translateY(0);
         }
       }
+      .card-label {
+  background: linear-gradient(135deg, #f15c22, #ff7849);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
     </style>
   </head>
   <body class="transition-all">
@@ -196,12 +203,11 @@
         <span class="navbar-brand mb-0 h5">
           <i class="bi bi-bar-chart-line"></i> Dashboard CKG Siswa Sekolah
         </span>
-        <span
-          class="dark-toggle text-dark"
-          id="darkToggle"
-          title="Mode Gelap/Terang"
-          >🌙</span
-        >
+        <!-- Ganti emoji dengan ikon -->
+<span id="darkToggle" class="dark-toggle text-dark" title="Mode Gelap/Terang">
+  <i class="bi bi-moon-fill"></i>
+</span>
+
       </div>
     </nav>
 
@@ -210,11 +216,11 @@
       <div class="spinner-border text-success" role="status"></div>
     </div>
     <!-- logo -->
-    <div class="container my-4" id="accordionWrapper">
-      <div class="logopkm">
-        <img src="assets/pkm.png" alt="Logo Puskesmas" class="logopkm" />
-      </div>
-    </div>
+    <!-- Ganti bagian logo -->
+<div class="text-center my-4">
+  <img src="assets/pkm.png" alt="Logo Puskesmas" class="logopkm img-fluid" style="max-width: 290px;" />
+</div>
+
     <!-- Main Content -->
     <div class="container my-4" id="accordionWrapper">
       <div class="row g-4 align-items-stretch">

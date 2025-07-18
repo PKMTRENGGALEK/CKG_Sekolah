@@ -221,9 +221,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     
-
-
-    <script>
+ <script>
       const kelas = "Kelas 6";
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbxsLpMVW96v_64uSzoMhdneojAd_9sWraGc5VqOT5LWVY-wkcjzyxU5kSOarPm_Yn7P6Q/exec";
@@ -503,16 +501,26 @@
             ].includes(field)) 
             {
               html += `<tr><th>${field}</th><td>`;
+
               ["Normal", "Tidak Normal"].forEach((opt) => {
                 html += `
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
-                          value === opt ? "checked" : ""
-                        }>
-                  <label class="form-check-label">${opt}</label>
-                </div>`;
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                      value === opt ? "checked" : ""
+                    }>
+                    <label class="form-check-label">${opt}</label>
+                  </div>`;
               });
+
+              // Tambahan input untuk keterangan
+              html += `
+                <div class="form-group mt-2">
+                  <label for="${field}_keterangan">Keterangan:</label>
+                  <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+                </div>`;
+
               html += `</td></tr>`;
+
             
           }else if (
             [

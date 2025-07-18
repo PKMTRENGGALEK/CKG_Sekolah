@@ -228,7 +228,7 @@
     once: true,
   });
 </script>
-  <script>
+ <script>
       const kelas = "Kelas 2";
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbxsLpMVW96v_64uSzoMhdneojAd_9sWraGc5VqOT5LWVY-wkcjzyxU5kSOarPm_Yn7P6Q/exec";
@@ -239,7 +239,7 @@
       const canvas = document.getElementById("signaturePad");
       const ctx = canvas.getContext("2d");
       let drawing = false;
-
+       
       function resizeCanvas() {
         const parent = canvas.parentElement;
         canvas.width = parent.offsetWidth;
@@ -508,16 +508,26 @@
             ].includes(field)) 
             {
               html += `<tr><th>${field}</th><td>`;
+
               ["Normal", "Tidak Normal"].forEach((opt) => {
                 html += `
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
-                          value === opt ? "checked" : ""
-                        }>
-                  <label class="form-check-label">${opt}</label>
-                </div>`;
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                      value === opt ? "checked" : ""
+                    }>
+                    <label class="form-check-label">${opt}</label>
+                  </div>`;
               });
+
+              // Tambahan input untuk keterangan
+              html += `
+                <div class="form-group mt-2">
+                  <label for="${field}_keterangan">Keterangan:</label>
+                  <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
+                </div>`;
+
               html += `</td></tr>`;
+
             
           }else if (
             [
@@ -685,7 +695,7 @@
           const res = await fetch(getScriptURL());
           const result = await res.json();
           globalData = result.data || result;
-
+          
           const headers = (
             result.headers || Object.keys(globalData[0] || {})
           ).filter(
@@ -719,14 +729,17 @@
           headRow.innerHTML +=
             "<th>Skrining</th><th>Aksi</th>";
           tableHead.appendChild(headRow);
-
+          
           globalData.forEach((row, i) => {
             const tr = document.createElement("tr");
+            tr.setAttribute("data-aos", "fade-up");
+
             headers.forEach((h) => {
               const td = document.createElement("td");
               td.innerHTML = formatValue(row[h], h);
               tr.appendChild(td);
             });
+
 
             tr.innerHTML += `
           <td><button class='btn btn-outline-secondary btn-xs shadow' onclick='showMandiri(${i})'><i class="bi bi-person-vcard"></i></button></td>
@@ -736,10 +749,12 @@
               : `<button class="btn btn-xs shadow btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`
           }</td>
         `;
-
+             
             tableBody.appendChild(tr);
-          });
+               
 
+          });
+          
           $("#dataTable").DataTable({
             destroy: true,
             responsive: true,
@@ -762,6 +777,7 @@
       }
 
       loadData();
+      
     </script>
   </body>
 </html>

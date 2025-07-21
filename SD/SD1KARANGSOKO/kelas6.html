@@ -235,7 +235,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-     <script>
+    <script>
       const kelas = "Kelas 6";
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbxsLpMVW96v_64uSzoMhdneojAd_9sWraGc5VqOT5LWVY-wkcjzyxU5kSOarPm_Yn7P6Q/exec";
@@ -509,9 +509,11 @@
             });
             html += `</td></tr>`;
           } else if (
-            ["Gigi karies", "Gigi hilang/dicabut", "Gigi goyang/Kesundulan"].includes(
-              field
-            )
+            [
+              "Gigi karies",
+              "Gigi hilang/dicabut",
+              "Gigi goyang/Kesundulan",
+            ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
 
@@ -530,10 +532,8 @@
             <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
           </div>
         </td></tr>`;
-        } else if (
-            ["Hasil pemeriksaan tajam pendengaran *"].includes(
-              field
-            )
+          } else if (
+            ["Hasil pemeriksaan tajam pendengaran *"].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
 

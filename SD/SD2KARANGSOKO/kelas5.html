@@ -239,9 +239,12 @@
       const kelas = "Kelas 5";
       const scriptURL =
         "https://script.google.com/macros/s/AKfycby8mzFKLXovu0v2phS1J__EE1ZJz0oZSAGTP_0MzF4Y2jnL_R4_MBnMMVuP2fmgmCvp/exec";
-      const getScriptURL = () =>
+       const getScriptURL = () =>
         `${scriptURL}?kelas=${encodeURIComponent(kelas)}`;
       let globalData = [];
+      const saved = localStorage.getItem("skriningData");
+  if (saved) globalData = JSON.parse(saved);
+
       const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
       const canvas = document.getElementById("signaturePad");
       const ctx = canvas.getContext("2d");
@@ -324,6 +327,7 @@
         "Tekanan darah diastolik *",
         "Hasil pemeriksaan tajam pendengaran *",
         "Pemeriksaan visus mata (snellen chart)",
+        "Pemeriksaan visus mata (snellen chart)_keterangan",
         "Gigi karies",
         "Gigi hilang/dicabut",
         "Gigi goyang/Kesundulan",
@@ -343,12 +347,13 @@
       const detailFields = [];
 
       function formatValue(value, header) {
-        if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-          const date = new Date(value);
-          return date.toLocaleDateString("id-ID");
-        }
-        return value;
-      }
+    if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+      const date = new Date(value);
+      return date.toLocaleDateString("id-ID");
+    }
+    return value;
+  }
+
 
       window.showDetail = function (index) {
         const row = globalData[index];
@@ -433,42 +438,37 @@
         new bootstrap.Modal(document.getElementById("detailModal")).show();
       };
 
-      window.submitEdit = async function (index) {
-        const formEl = document.getElementById("editForm");
-        const formData = new FormData(formEl);
-        const row = globalData[index];
-        const payload = new URLSearchParams();
+    function updateTableRow(index, rowData) {
+  const headers = Array.from(document.querySelectorAll("#tableHead th"))
+    .map(th => th.textContent)
+    .filter(h => h !== "Skrining" && h !== "Aksi");
 
-        Object.keys(row).forEach((k) => {
-          if (!detailFields.includes(k)) payload.append(k, row[k]);
-        });
-        detailFields.forEach((field) =>
-          payload.append(field, formData.get(field))
-        );
+  const tableBody = document.getElementById("tableBody");
+  const tr = tableBody.querySelectorAll("tr")[index];
+  if (!tr) return;
 
-        payload.append("action", "edit");
-        payload.append("index", index);
-        payload.append("kelas", kelas);
+  headers.forEach((header, i) => {
+    const cell = tr.children[i];
+    if (!cell) return;
 
-        Swal.fire({
-          title: "Menyimpan...",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
+    // Tambahkan ikon ceklis di kolom Nama
+    if (header === "Nama") {
+      const nameText = formatValue(rowData[header] || "", header);
+      cell.innerHTML = `✅ ${nameText}`;
+    } else {
+      cell.textContent = formatValue(rowData[header] || "", header);
+    }
+  });
 
-        try {
-          const res = await fetch(scriptURL, { method: "POST", body: payload });
-          const result = await res.json();
-          Swal.fire(
-            "Berhasil",
-            result.message || "Data berhasil disimpan!",
-            "success"
-          ).then(() => location.reload());
-        } catch {
-          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
-        }
-      };
+  // Highlight baris dengan warna hijau muda
+  tr.style.transition = "background-color 0.3s";
+  tr.style.backgroundColor = "#d4edda"; // hijau muda
 
+  // Hapus warna highlight setelah 3 detik
+  setTimeout(() => {
+    tr.style.backgroundColor = "";
+  }, 3000);
+}
       window.showMandiri = function (index) {
         const row = globalData[index];
         let html = `<form id="mandiriForm"><table class='table table-bordered table-sm'>`;
@@ -571,11 +571,15 @@
             });
 
             // Tambahan input untuk keterangan
-            html += `
-                      <div class="form-group mt-2">
-                        <label for="${field}_keterangan">Keterangan:</label>
-                        <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
-                      </div>`;
+          //  const ketKey = `${field}_keterangan`;
+          //   const ketValue = row[ketKey] || "";
+
+          //   html += `
+          //     <div class="form-group mt-2">
+          //       <label for="${field}_keterangan">Keterangan:</label>
+          //       <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" value="${ketValue}" placeholder="Tambahkan keterangan jika perlu">
+          //     </div>`;
+
 
             html += `</td></tr>`;
           } else if (
@@ -638,45 +642,54 @@
         new bootstrap.Modal(document.getElementById("detailModal")).show();
       };
 
-      window.submitMandiri = async function (index) {
+    window.submitMandiri = function (index) {
         const formEl = document.getElementById("mandiriForm");
         const formData = new FormData(formEl);
         const row = globalData[index];
         const payload = new URLSearchParams();
 
+        // Simpan field selain mandiriFields
         Object.keys(row).forEach((k) => {
           if (!mandiriFields.includes(k)) payload.append(k, row[k]);
         });
+
+        // Simpan mandiriFields dan cek jika ada _keterangan
         mandiriFields.forEach((field) => {
           const values = formData.getAll(`${field}[]`);
-          payload.append(
-            field,
-            values.length > 0 ? values.join(", ") : formData.get(field)
-          );
+          const fieldValue = values.length > 0 ? values.join(", ") : formData.get(field) || "";
+          payload.append(field, fieldValue);
+          globalData[index][field] = fieldValue;
+
+          // Ambil input keterangan jika ada
+          const keteranganField = `${field}_keterangan`;
+          const keteranganValue = formData.get(keteranganField);
+          if (keteranganValue !== null) {
+            payload.append(keteranganField, keteranganValue);
+            globalData[index][keteranganField] = keteranganValue;
+          }
         });
 
         payload.append("action", "edit");
         payload.append("index", index);
         payload.append("kelas", kelas);
 
-        Swal.fire({
-          title: "Menyimpan...",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
+        updateTableRow(index, globalData[index]);
 
-        try {
-          const res = await fetch(scriptURL, { method: "POST", body: payload });
-          const result = await res.json();
-          Swal.fire(
-            "Berhasil",
-            result.message || "Data berhasil disimpan!",
-            "success"
-          ).then(() => location.reload());
-        } catch {
-          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
-        }
+        Swal.fire("Tersimpan", "Data berhasil disimpan!", "success");
+        const modalEl = document.getElementById("detailModal");
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+        fetch(scriptURL, { method: "POST", body: payload })
+          .then((res) => res.json())
+          .then((result) => {
+            console.log("Data disimpan ke server:", result.message);
+          })
+          .catch((err) => {
+            console.error("Gagal simpan ke server:", err);
+          });
       };
+
       function isCanvasEmpty(canvas) {
         const blank = document.createElement("canvas");
         blank.width = canvas.width;

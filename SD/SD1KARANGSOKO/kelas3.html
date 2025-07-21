@@ -509,9 +509,11 @@
             });
             html += `</td></tr>`;
           } else if (
-            ["Gigi karies", "Gigi hilang/dicabut", "Gigi goyang/Kesundulan"].includes(
-              field
-            )
+            [
+              "Gigi karies",
+              "Gigi hilang/dicabut",
+              "Gigi goyang/Kesundulan",
+            ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
 
@@ -530,10 +532,8 @@
             <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
           </div>
         </td></tr>`;
-        } else if (
-            ["Hasil pemeriksaan tajam pendengaran *"].includes(
-              field
-            )
+          } else if (
+            ["Hasil pemeriksaan tajam pendengaran *"].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
 
@@ -560,7 +560,7 @@
           ) {
             html += `<tr><th>${field}</th><td>`;
 
-            ["Visus 6/6 - 6/12", "Visus <6/12"].forEach((opt) => {
+            ["Visus 6/6 - 6/12", "Visus > 6/12"].forEach((opt) => {
               html += `
                         <div class="form-check form-check-inline">
                           <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${

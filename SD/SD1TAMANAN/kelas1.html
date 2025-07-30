@@ -447,7 +447,7 @@
               "Apakah orang tua memiliki riwayat penyakit diabetes? *",
               // "Gula Darah Sewaktu (GDS) ",
               "Apakah Anda pernah atau sedang mengalami batuk yang tidak sembuh-sembuh selama lebih dari 2 minggu? *",
-              "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+              // "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
               "Hasil Pemeriksaan BTA",
               "Apakah Anda merokok dalam setahun terakhir ini? *",
             //  "Jika iya, Sudah Berapa Lama Merokok (..Bulan-Tahun)",
@@ -544,7 +544,24 @@
             //     </div>`;
 
             html += `</td></tr>`;
-            
+             } else if (
+            [
+              // "Hasil pemeriksaan tajam pendengaran *",
+              "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+            ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+
+            ["Negatif", "Positif", "Tidak Diperiksa"].forEach((opt) => {
+              html += `
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                          <label class="form-check-label">${opt}</label>
+                        </div>`;
+            });
+             html += `</td></tr>`; 
              } else if (
             [
               "Pemeriksaan Mata Luar",

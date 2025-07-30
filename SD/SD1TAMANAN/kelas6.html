@@ -74,19 +74,19 @@
           <u>Data Siswa Kelas 6 </u>
         </h4>
         <div class="d-flex gap-2">
-          <button
+          <!-- <button
             class="btn btn-sm btn-outline-success shadow"
             id="importExcelBtn"
           >
             <i class="bi bi-upload"></i> Import Excel
-          </button>
-          <a
+          </button> -->
+          <!-- <a
             href="https://docs.google.com/spreadsheets/d/1PbguCYvLyrw_rBrY_cclZ7U1QBOmxhhX2McYFojpbI4/edit?usp=sharing"
             target="_blank"
             class="btn btn-outline-danger btn-sm shadow"
           >
             <i class="bi bi-file-earmark-richtext"></i> View Source Data
-          </a>
+          </a> -->
         </div>
       </div>
 
@@ -190,7 +190,7 @@
       const kelas = "Kelas 6"; // ✅ Sheet yang digunakan
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbx0uqmoXDQd0ilAhIW8la2JB-6PFK7z6Zz_01Ln4-ncjNh2lGR2lF1TXgHsVeRGv5dWSQ/exec";
-      const getScriptURL = () =>
+     const getScriptURL = () =>
         `${scriptURL}?kelas=${encodeURIComponent(kelas)}`;
       let globalData = [];
       const saved = localStorage.getItem("skriningData");
@@ -260,11 +260,14 @@
       document.getElementById("clearBtn").onclick = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       };
-      const nothing = ["Tinggi", "Berat", "Lingkar Perut", "Lingkar Lengan"];
+      const nothing = ["Tinggi", "Berat", "Lingkar Perut", "Lingkar Lengan","Apakah Pernah Mengalami Gatal di area Sensitif"];
       const mandiriFields = [
-        "Kesehatan Reproduksi",
+        "Skrining Kesehatan Reproduksi",
+        "Apakah Pernah Mengalami Gatal di area Sensitif (BAB, BAK)",
+        "Usia Berapa mengalami Menstruasi Pertama",
         "Riwayat Imunisasi Rutin Lengkap",
         "PAR-Q",
+        "Berapa lama waktu Tempuh dalam Pengukuran Kebugaran Jasmani (dalam Menit)",
         "Apakah penyandang disabilitas? *",
         "Apakah Anda memiliki ibu kandung/saudara sekandung yang menderita Hepatitis B? *",
         "Apakah Anda pernah menerima transfusi darah sebelumnya? *",
@@ -277,22 +280,27 @@
         "Tekanan Darah Sistolik *",
         "Tekanan darah diastolik *",
         "Hasil pemeriksaan tajam pendengaran *",
+        "Serumen Inpaksi",
+        "Inffeksi telinga",
+        "Pemeriksaan Mata Luar",
         "Pemeriksaan visus mata (snellen chart)",
         "Pemeriksaan visus mata (snellen chart)_keterangan",
         "Gigi karies",
         "Gigi hilang/dicabut",
         "Gigi goyang/Kesundulan",
         "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
-        "Apakah orang tua memiliki riwayat penyakit diabetes? *",
+        "Apakah orang tua atau saudara kandung  memiliki riwayat penyakit diabetes? *",
         "Gula Darah Sewaktu (GDS) ",
         "Apakah Anda pernah atau sedang mengalami batuk yang tidak sembuh-sembuh selama lebih dari 2 minggu? *",
         "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
         "Hasil Pemeriksaan BTA",
-        "Apakah Anda merokok dalam setahun terakhir ini? *",
-        "Apakah Anda pernah merokok sebelumnya? *",
         "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
+        "Apakah Anda merokok dalam setahun terakhir ini? *",
+        "Jika iya, Sudah Berapa Lama Merokok (..Bulan-Tahun)",
+        "Berapa Batang Rokok Yang di Hisap Dalam Sehari",
         "Hasil Rapid Test Hepatitis B",
         "Hasil Rapid Test Hepatitis C",
+        
       ];
 
       const detailFields = [];
@@ -328,7 +336,7 @@
                 <label class="form-check-label">${opt}</label>
               </div>`;
             });
-
+          
             // Khusus Hasil Rapid Test Hepatitis C
           } else if (field.trim() === "Hasil Rapid Test Hepatitis C") {
             ["Anti HCV Non Reaktif", "Anti HCV Reaktif"].forEach((opt) => {
@@ -434,17 +442,22 @@
               "Apakah Anda rutin melakukan olahraga, (seperti jalan cepat, lari, bersepeda, senam, berenang, bulutangkis, sepakbola atau olahraga lainnya)? *",
               // "Hasil pemeriksaan tajam pendengaran *",
               // "Pemeriksaan visus mata (snellen chart)",
+              
               "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
-              "Apakah orang tua memiliki riwayat penyakit diabetes? *",
+              "Apakah orang tua atau saudara kandung  memiliki riwayat penyakit diabetes? *",
               // "Gula Darah Sewaktu (GDS) ",
               "Apakah Anda pernah atau sedang mengalami batuk yang tidak sembuh-sembuh selama lebih dari 2 minggu? *",
-              "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+              // "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
               "Hasil Pemeriksaan BTA",
               "Apakah Anda merokok dalam setahun terakhir ini? *",
-              "Apakah Anda pernah merokok sebelumnya? *",
+            //  "Jika iya, Sudah Berapa Lama Merokok (..Bulan-Tahun)",
               "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
-              "Hasil Rapid Test Hepatitis B",
-              "Hasil Rapid Test Hepatitis C",
+              // "Hasil Rapid Test Hepatitis B",
+              // "Hasil Rapid Test Hepatitis C",
+              "Apakah Pernah Mengalami Gatal di area Sensitif (BAB, BAK)",
+        // "Usia Berapa mengalami Menstruasi Pertama"
+        "Serumen Inpaksi",
+        "Inffeksi telinga",
             ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
@@ -531,11 +544,65 @@
             //     </div>`;
 
             html += `</td></tr>`;
+             } else if (
+            [
+              // "Hasil pemeriksaan tajam pendengaran *",
+              "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+              "Hasil Rapid Test Hepatitis B",
+              "Hasil Rapid Test Hepatitis C",
+            ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+
+            ["Negatif", "Positif", "Tidak Diperiksa"].forEach((opt) => {
+              html += `
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                          <label class="form-check-label">${opt}</label>
+                        </div>`;
+            });
+             html += `</td></tr>`; 
+             } else if (
+            [
+              "Pemeriksaan Mata Luar",
+             
+            ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+            ["Mata Sehat", "Mata Tidak Sehat"].forEach((opt) => {
+              html += `
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                      <label class="form-check-label">${opt}</label>
+                    </div>`;
+            });
+            html += `</td></tr>`; 
+             } else if (
+            [
+              "Riwayat Imunisasi Rutin Lengkap",
+             
+            ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+            ["Dilaksanakan Lengkap", "Dilaksanakan Tidak Lengkap","Tidak Dilaksanakan"].forEach((opt) => {
+              html += `
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                      <label class="form-check-label">${opt}</label>
+                    </div>`;
+            });
+            html += `</td></tr>`;
           } else if (
             [
               "PAR-Q",
-              "Kesehatan Reproduksi",
-              "Riwayat Imunisasi Rutin Lengkap",
+              "Skrining Kesehatan Reproduksi",
+             
             ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;

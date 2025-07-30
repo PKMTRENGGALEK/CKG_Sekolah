@@ -293,6 +293,8 @@
         "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
         "Hasil Rapid Test Hepatitis B",
         "Hasil Rapid Test Hepatitis C",
+        "Apakah Pernah Mengalami Gatal di area Sensitif",
+        "Usia Berapa mengalami Menstruasi Pertama",
       ];
 
       const detailFields = [];
@@ -328,6 +330,7 @@
                 <label class="form-check-label">${opt}</label>
               </div>`;
             });
+            
 
             // Khusus Hasil Rapid Test Hepatitis C
           } else if (field.trim() === "Hasil Rapid Test Hepatitis C") {
@@ -445,6 +448,8 @@
               "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
               "Hasil Rapid Test Hepatitis B",
               "Hasil Rapid Test Hepatitis C",
+               "Apakah Pernah Mengalami Gatal di area Sensitif",
+        // "Usia Berapa mengalami Menstruasi Pertama"
             ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;

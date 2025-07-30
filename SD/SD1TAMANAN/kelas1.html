@@ -282,6 +282,7 @@
         "Hasil pemeriksaan tajam pendengaran *",
         "Serumen Inpaksi",
         "Inffeksi telinga",
+        "Pemeriksaan Mata Luar",
         "Pemeriksaan visus mata (snellen chart)",
         "Pemeriksaan visus mata (snellen chart)_keterangan",
         "Gigi karies",
@@ -334,8 +335,7 @@
                 <label class="form-check-label">${opt}</label>
               </div>`;
             });
-            
-
+          
             // Khusus Hasil Rapid Test Hepatitis C
           } else if (field.trim() === "Hasil Rapid Test Hepatitis C") {
             ["Anti HCV Non Reaktif", "Anti HCV Reaktif"].forEach((opt) => {
@@ -441,6 +441,7 @@
               "Apakah Anda rutin melakukan olahraga, (seperti jalan cepat, lari, bersepeda, senam, berenang, bulutangkis, sepakbola atau olahraga lainnya)? *",
               // "Hasil pemeriksaan tajam pendengaran *",
               // "Pemeriksaan visus mata (snellen chart)",
+              
               "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
               "Apakah orang tua memiliki riwayat penyakit diabetes? *",
               // "Gula Darah Sewaktu (GDS) ",
@@ -543,7 +544,23 @@
 
             html += `</td></tr>`;
             
+             } else if (
+            [
+              "Pemeriksaan Mata Luar",
              
+            ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+            ["Mata Sehat", "Mata Tidak Sehat"].forEach((opt) => {
+              html += `
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                      <label class="form-check-label">${opt}</label>
+                    </div>`;
+            });
+            html += `</td></tr>`; 
              } else if (
             [
               "Riwayat Imunisasi Rutin Lengkap",

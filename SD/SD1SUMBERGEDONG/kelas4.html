@@ -250,6 +250,9 @@
       const getScriptURL = () =>
         `${scriptURL}?kelas=${encodeURIComponent(kelas)}`;
       let globalData = [];
+      const saved = localStorage.getItem("skriningData");
+      if (saved) globalData = JSON.parse(saved);
+
       const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
       const canvas = document.getElementById("signaturePad");
       const ctx = canvas.getContext("2d");
@@ -314,11 +317,20 @@
       document.getElementById("clearBtn").onclick = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       };
-      const nothing = ["Tinggi", "Berat", "Lingkar Perut", "Lingkar Lengan"];
+      const nothing = [
+        "Tinggi",
+        "Berat",
+        "Lingkar Perut",
+        "Lingkar Lengan",
+        "Apakah Pernah Mengalami Gatal di area Sensitif",
+      ];
       const mandiriFields = [
-        "Kesehatan Reproduksi",
+        "Skrining Kesehatan Reproduksi",
+        "Apakah Pernah Mengalami Gatal di area Sensitif (BAB, BAK)",
+        "Usia Berapa mengalami Menstruasi Pertama",
         "Riwayat Imunisasi Rutin Lengkap",
         "PAR-Q",
+        "Berapa lama waktu Tempuh dalam Pengukuran Kebugaran Jasmani (dalam Menit)",
         "Apakah penyandang disabilitas? *",
         "Apakah Anda memiliki ibu kandung/saudara sekandung yang menderita Hepatitis B? *",
         "Apakah Anda pernah menerima transfusi darah sebelumnya? *",
@@ -331,19 +343,24 @@
         "Tekanan Darah Sistolik *",
         "Tekanan darah diastolik *",
         "Hasil pemeriksaan tajam pendengaran *",
+        "Serumen Inpaksi",
+        "Inffeksi telinga",
+        "Pemeriksaan Mata Luar",
         "Pemeriksaan visus mata (snellen chart)",
+        "Pemeriksaan visus mata (snellen chart)_keterangan",
         "Gigi karies",
         "Gigi hilang/dicabut",
         "Gigi goyang/Kesundulan",
         "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
-        "Apakah orang tua memiliki riwayat penyakit diabetes? *",
+        "Apakah orang tua atau saudara kandung  memiliki riwayat penyakit diabetes? *",
         "Gula Darah Sewaktu (GDS) ",
         "Apakah Anda pernah atau sedang mengalami batuk yang tidak sembuh-sembuh selama lebih dari 2 minggu? *",
         "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
         "Hasil Pemeriksaan BTA",
-        "Apakah Anda merokok dalam setahun terakhir ini? *",
-        "Apakah Anda pernah merokok sebelumnya? *",
         "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
+        "Apakah Anda merokok dalam setahun terakhir ini? *",
+        "Jika iya, Sudah Berapa Lama Merokok (..Bulan-Tahun)",
+        "Berapa Batang Rokok Yang di Hisap Dalam Sehari",
         "Hasil Rapid Test Hepatitis B",
         "Hasil Rapid Test Hepatitis C",
       ];
@@ -441,42 +458,37 @@
         new bootstrap.Modal(document.getElementById("detailModal")).show();
       };
 
-      window.submitEdit = async function (index) {
-        const formEl = document.getElementById("editForm");
-        const formData = new FormData(formEl);
-        const row = globalData[index];
-        const payload = new URLSearchParams();
+      function updateTableRow(index, rowData) {
+        const headers = Array.from(document.querySelectorAll("#tableHead th"))
+          .map((th) => th.textContent)
+          .filter((h) => h !== "Skrining" && h !== "Aksi");
 
-        Object.keys(row).forEach((k) => {
-          if (!detailFields.includes(k)) payload.append(k, row[k]);
+        const tableBody = document.getElementById("tableBody");
+        const tr = tableBody.querySelectorAll("tr")[index];
+        if (!tr) return;
+
+        headers.forEach((header, i) => {
+          const cell = tr.children[i];
+          if (!cell) return;
+
+          // Tambahkan ikon ceklis di kolom Nama
+          if (header === "Nama") {
+            const nameText = formatValue(rowData[header] || "", header);
+            cell.innerHTML = `✅ ${nameText}`;
+          } else {
+            cell.textContent = formatValue(rowData[header] || "", header);
+          }
         });
-        detailFields.forEach((field) =>
-          payload.append(field, formData.get(field))
-        );
 
-        payload.append("action", "edit");
-        payload.append("index", index);
-        payload.append("kelas", kelas);
+        // Highlight baris dengan warna hijau muda
+        tr.style.transition = "background-color 0.3s";
+        tr.style.backgroundColor = "#d4edda"; // hijau muda
 
-        Swal.fire({
-          title: "Menyimpan...",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
-
-        try {
-          const res = await fetch(scriptURL, { method: "POST", body: payload });
-          const result = await res.json();
-          Swal.fire(
-            "Berhasil",
-            result.message || "Data berhasil disimpan!",
-            "success"
-          ).then(() => location.reload());
-        } catch {
-          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
-        }
-      };
-
+        // Hapus warna highlight setelah 3 detik
+        setTimeout(() => {
+          tr.style.backgroundColor = "";
+        }, 3000);
+      }
       window.showMandiri = function (index) {
         const row = globalData[index];
         let html = `<form id="mandiriForm"><table class='table table-bordered table-sm'>`;
@@ -492,17 +504,22 @@
               "Apakah Anda rutin melakukan olahraga, (seperti jalan cepat, lari, bersepeda, senam, berenang, bulutangkis, sepakbola atau olahraga lainnya)? *",
               // "Hasil pemeriksaan tajam pendengaran *",
               // "Pemeriksaan visus mata (snellen chart)",
+
               "Apakah berat badan turun secara drastis, sering haus atau banyak minum dan  sering pipis dalam 1 bulan terakhir ? *",
-              "Apakah orang tua memiliki riwayat penyakit diabetes? *",
+              "Apakah orang tua atau saudara kandung  memiliki riwayat penyakit diabetes? *",
               // "Gula Darah Sewaktu (GDS) ",
               "Apakah Anda pernah atau sedang mengalami batuk yang tidak sembuh-sembuh selama lebih dari 2 minggu? *",
-              "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+              // "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
               "Hasil Pemeriksaan BTA",
               "Apakah Anda merokok dalam setahun terakhir ini? *",
-              "Apakah Anda pernah merokok sebelumnya? *",
+              //  "Jika iya, Sudah Berapa Lama Merokok (..Bulan-Tahun)",
               "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
-              "Hasil Rapid Test Hepatitis B",
-              "Hasil Rapid Test Hepatitis C",
+              // "Hasil Rapid Test Hepatitis B",
+              // "Hasil Rapid Test Hepatitis C",
+              "Apakah Pernah Mengalami Gatal di area Sensitif (BAB, BAK)",
+              // "Usia Berapa mengalami Menstruasi Pertama"
+              "Serumen Inpaksi",
+              "Inffeksi telinga",
             ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
@@ -517,9 +534,11 @@
             });
             html += `</td></tr>`;
           } else if (
-            ["Gigi karies", "Gigi hilang/dicabut", "Gigi goyang/Kesundulan"].includes(
-              field
-            )
+            [
+              "Gigi karies",
+              "Gigi hilang/dicabut",
+              "Gigi goyang/Kesundulan",
+            ].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
 
@@ -538,10 +557,8 @@
             <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
           </div>
         </td></tr>`;
-        } else if (
-            ["Hasil pemeriksaan tajam pendengaran *"].includes(
-              field
-            )
+          } else if (
+            ["Hasil pemeriksaan tajam pendengaran *"].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
 
@@ -579,19 +596,66 @@
             });
 
             // Tambahan input untuk keterangan
-            html += `
-                      <div class="form-group mt-2">
-                        <label for="${field}_keterangan">Keterangan:</label>
-                        <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" placeholder="Tambahkan keterangan jika perlu">
-                      </div>`;
+            //  const ketKey = `${field}_keterangan`;
+            //   const ketValue = row[ketKey] || "";
+
+            //   html += `
+            //     <div class="form-group mt-2">
+            //       <label for="${field}_keterangan">Keterangan:</label>
+            //       <input type="text" class="form-control" name="${field}_keterangan" id="${field}_keterangan" value="${ketValue}" placeholder="Tambahkan keterangan jika perlu">
+            //     </div>`;
 
             html += `</td></tr>`;
           } else if (
             [
-              "PAR-Q",
-              "Kesehatan Reproduksi",
-              "Riwayat Imunisasi Rutin Lengkap",
+              // "Hasil pemeriksaan tajam pendengaran *",
+              "Apakah Anda tinggal serumah atau sering bertemu dengan orang yang menderita Tuberkulosis (TBC) atau batuk berkepanjangan? *",
+              "Hasil Rapid Test Hepatitis B",
+              "Hasil Rapid Test Hepatitis C",
             ].includes(field)
+          ) {
+            html += `<tr><th>${field}</th><td>`;
+
+            ["Negatif", "Positif", "Tidak Diperiksa"].forEach((opt) => {
+              html += `
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                          <label class="form-check-label">${opt}</label>
+                        </div>`;
+            });
+            html += `</td></tr>`;
+          } else if (["Pemeriksaan Mata Luar"].includes(field)) {
+            html += `<tr><th>${field}</th><td>`;
+            ["Mata Sehat", "Mata Tidak Sehat"].forEach((opt) => {
+              html += `
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                      <label class="form-check-label">${opt}</label>
+                    </div>`;
+            });
+            html += `</td></tr>`;
+          } else if (["Riwayat Imunisasi Rutin Lengkap"].includes(field)) {
+            html += `<tr><th>${field}</th><td>`;
+            [
+              "Dilaksanakan Lengkap",
+              "Dilaksanakan Tidak Lengkap",
+              "Tidak Dilaksanakan",
+            ].forEach((opt) => {
+              html += `
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="${field}" value="${opt}" ${
+                value === opt ? "checked" : ""
+              }>
+                      <label class="form-check-label">${opt}</label>
+                    </div>`;
+            });
+            html += `</td></tr>`;
+          } else if (
+            ["PAR-Q", "Skrining Kesehatan Reproduksi"].includes(field)
           ) {
             html += `<tr><th>${field}</th><td>`;
             ["Dilaksanakan", "Tidak Dilaksanakan"].forEach((opt) => {
@@ -646,45 +710,55 @@
         new bootstrap.Modal(document.getElementById("detailModal")).show();
       };
 
-      window.submitMandiri = async function (index) {
+      window.submitMandiri = function (index) {
         const formEl = document.getElementById("mandiriForm");
         const formData = new FormData(formEl);
         const row = globalData[index];
         const payload = new URLSearchParams();
 
+        // Simpan field selain mandiriFields
         Object.keys(row).forEach((k) => {
           if (!mandiriFields.includes(k)) payload.append(k, row[k]);
         });
+
+        // Simpan mandiriFields dan cek jika ada _keterangan
         mandiriFields.forEach((field) => {
           const values = formData.getAll(`${field}[]`);
-          payload.append(
-            field,
-            values.length > 0 ? values.join(", ") : formData.get(field)
-          );
+          const fieldValue =
+            values.length > 0 ? values.join(", ") : formData.get(field) || "";
+          payload.append(field, fieldValue);
+          globalData[index][field] = fieldValue;
+
+          // Ambil input keterangan jika ada
+          const keteranganField = `${field}_keterangan`;
+          const keteranganValue = formData.get(keteranganField);
+          if (keteranganValue !== null) {
+            payload.append(keteranganField, keteranganValue);
+            globalData[index][keteranganField] = keteranganValue;
+          }
         });
 
         payload.append("action", "edit");
         payload.append("index", index);
         payload.append("kelas", kelas);
 
-        Swal.fire({
-          title: "Menyimpan...",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
+        updateTableRow(index, globalData[index]);
 
-        try {
-          const res = await fetch(scriptURL, { method: "POST", body: payload });
-          const result = await res.json();
-          Swal.fire(
-            "Berhasil",
-            result.message || "Data berhasil disimpan!",
-            "success"
-          ).then(() => location.reload());
-        } catch {
-          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
-        }
+        Swal.fire("Tersimpan", "Data berhasil disimpan!", "success");
+        const modalEl = document.getElementById("detailModal");
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+        fetch(scriptURL, { method: "POST", body: payload })
+          .then((res) => res.json())
+          .then((result) => {
+            console.log("Data disimpan ke server:", result.message);
+          })
+          .catch((err) => {
+            console.error("Gagal simpan ke server:", err);
+          });
       };
+
       function isCanvasEmpty(canvas) {
         const blank = document.createElement("canvas");
         blank.width = canvas.width;

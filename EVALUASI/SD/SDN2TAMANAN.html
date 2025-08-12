@@ -1,101 +1,75 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Data Evaluasi</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Evaluasi </title>
 
-    <!-- Bootstrap 5 -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- DataTables Bootstrap 5 -->
-    <link
-      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-    />
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- DataTables Bootstrap 5 -->
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
-    <style>
-      body {
-        background: linear-gradient(to bottom right, white, #b2f2bb);
-        min-height: 100vh;
-      }
-      .container {
-        margin-top: 50px;
-      }
-      #myTable {
-        font-size: 0.75rem;
-      }
-      #myTable thead th {
-        font-size: 0.75rem;
-        text-align: center;
-        vertical-align: middle;
-        font-weight: bold;
-        background-color: #d1e7dd;
-        padding: 0.2rem;
-      }
-      #myTable td {
-        padding: 0.2rem;
-      }
-      #myTable th:nth-child(2),
-      #myTable td:nth-child(2) {
-        min-width: 150px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="card shadow">
-        <div class="card-header bg-success text-white">
-          <h4 class="mb-0">Rekap Data Siswa SDN 2 TAMANAN</h4>
-        </div>
-        <div class="container mt-2">
-          <button
-            onclick="history.back()"
-            class="btn btn-outline-secondary btn-sm"
-          >
-            <i class="bi bi-arrow-left-circle"></i> Kembali
-          </button>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table
-              id="myTable"
-              class="table table-striped table-bordered"
-              style="width: 100%"
-            >
-              <thead>
-                <tr class="text-center">
-                  <th rowspan="2">No</th>
-                  <th rowspan="2">Nama Anak</th>
-                  <th rowspan="2">Jenis Kelamin</th>
-                  <th rowspan="2">Kelas</th>
-                  <th rowspan="2">NISN</th>
-                  <th rowspan="2">NIK</th>
-                  <th rowspan="2">Tempat Lahir</th>
-                  <th rowspan="2">Tanggal Lahir</th>
-                  <th rowspan="2">Usia</th>
-                  <th colspan="7" class="text-center">GIZI</th>
-                </tr>
-                <tr>
-                  <th>BB (kg)</th>
-                  <th>TB (cm)</th>
-                  <th>Lingkar Perut</th>
-                  <th>Lingkar Lengan</th>
-                  <th>IMT (kg/m2)</th>
-                  <th>IMT/U (SD)</th>
-                  <th>Status Gizi</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <div class="mt-2">
+  <style>
+    body {
+      background: linear-gradient(to bottom right, white, #b2f2bb);
+      min-height: 100vh;
+    }
+    .container {
+      margin-top: 50px;
+    }
+    #myTable {
+      font-size: 0.75rem;
+    }
+    #myTable thead th {
+      font-size: 0.75rem;
+      text-align: center;
+      vertical-align: middle;
+      font-weight: bold;
+      background-color: #d1e7dd;
+      padding: 0.2rem;
+    }
+    #myTable td {
+      padding: 0.2rem;
+    }
+  </style>
+  <style>
+  /* Border untuk seluruh tabel dan sel */
+  #myTable {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  #myTable th, #myTable td {
+    border: 1px solid #dee2e6; /* border abu-abu sesuai Bootstrap */
+    padding: 8px;
+    white-space: nowrap; /* supaya kolom header dan data tidak wrap baris */
+  }
+  #myTable thead th {
+    background-color: #f8f9fa; /* warna background header */
+    font-weight: 600;
+  }
+  /* Jika ingin kolom header bisa melebar sesuai konten tanpa wrap */
+  #myTable th {
+    min-width: 100px; /* minimal lebar kolom, bisa diatur */
+  }
+</style>
+
+
+</head>
+<body>
+  <div class="container">
+    <div class="card shadow">
+      <div class="card-header bg-success text-white">
+        <h4 class="mb-0">Rekap Data Siswa SDN 2 TAMANAN</h4>
+      </div>
+      <div class="container mt-2">
+        <button onclick="history.back()" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-left-circle"></i> Kembali
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="mt-2 mb-2">
             <a
               href="https://docs.google.com/spreadsheets/d/1FLLvkzmYaMIuWArQSjGzwsG3K2INFdkP/export?format=xlsx"
               class="btn btn-outline-success btn-sm shadow"
@@ -103,150 +77,99 @@
               <i class="bi bi-download"></i> Download Data
             </a>
           </div>
-          <!-- Perkecil tinggi canvas -->
-          <div class="mt-4" style="max-width: 300px; margin: auto">
-            <canvas id="chartStatusGizi" height="250"></canvas>
-          </div>
+        <div class="table-responsive">
+          <table id="myTable" class="table table-striped table-bordered" style="width: 100%">
+            <thead></thead> <!-- Kosong, akan digenerate otomatis -->
+            <tbody></tbody>
+          </table>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-    <script>
-      $(document).ready(function () {
-        const url =
-          "https://script.google.com/macros/s/AKfycbwyfbkLim8hjCtlitTrYJIuF2fib0q5Z3uJJERp8FT4ZhP6lLKsmTdGl1Re-AQezCEA/exec";
-        let statusGiziCount = {};
-        const tbody = $("#myTable tbody");
-        // 🔹 Tampilkan loading spinner saat fetch dimulai
-        tbody.html(`
-    <tr>
-      <td colspan="16" class="text-center py-4">
-        <div class="spinner-border text-success" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="mt-2 text-success fw-bold">Mengambil data...</div>
-      </td>
-    </tr>
-  `);
-        fetch(url)
-          .then((res) => res.json())
-          .then((json) => {
-            if (!json.data) return;
-            const tbody = $("#myTable tbody");
-            tbody.empty();
+  <script>
+    $(document).ready(function () {
+      const url = "https://script.google.com/macros/s/AKfycbx0D8eT7pYHjK3xnnQOIOXZbOmf0hWbVoKsjmADm7gT5x725QPTnGR0SprzYZHU7II/exec";
+      const $tbody = $("#myTable tbody");
+      const $thead = $("#myTable thead");
 
-            json.data.forEach((row, i) => {
-              // Hitung status gizi
-              let status = row[44] || "Tidak Diketahui";
-              statusGiziCount[status] = (statusGiziCount[status] || 0) + 1;
+      // Tampilkan loading spinner
+      $tbody.html(`
+        <tr>
+          <td colspan="100" class="text-center py-4">
+            <div class="spinner-border text-success" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="mt-2 text-success fw-bold">Mengambil data...</div>
+          </td>
+        </tr>
+      `);
 
-              // Tanggal lahir format dd-mm-yyyy
-              let tgl = "";
-              if (row[8]) {
-                let dateObj = new Date(row[8]);
-                let day = String(dateObj.getDate()).padStart(2, "0");
-                let month = String(dateObj.getMonth() + 1).padStart(2, "0");
-                let year = dateObj.getFullYear();
-                tgl = `${day}-${month}-${year}`;
-              }
+      fetch(url)
+        .then(res => res.json())
+        .then(json => {
+          if (!json.data || json.data.length === 0) {
+            $tbody.html('<tr><td colspan="100" class="text-center">Data kosong</td></tr>');
+            return;
+          }
 
-              tbody.append(`
-          <tr>
-            <td>${i + 1}</td>
-            <td>${row[1] || ""}</td>
-            <td>${row[2] || ""}</td>
-            <td>${row[4] || ""}</td>
-            <td>${row[5] || ""}</td>
-            <td>${row[6] || ""}</td>
-            <td>${row[7] || ""}</td>
-            <td>${tgl}</td>
-            <td>${row[9] || ""}</td>
-            <td>${row[38] ? parseFloat(row[38]).toFixed(2) : ""}</td>
-            <td>${row[39] ? parseFloat(row[39]).toFixed(2) : ""}</td>
-            <td>${row[40] ? parseFloat(row[40]).toFixed(2) : ""}</td>
-            <td>${row[41] ? parseFloat(row[41]).toFixed(2) : ""}</td>
-            <td>${row[42] ? parseFloat(row[42]).toFixed(2) : ""}</td>
-            <td>${row[43] ? parseFloat(row[43]).toFixed(2) : ""}</td>
-            <td>${status}</td>
-          </tr>
-        `);
+          const data = json.data;
+
+          // Kosongkan tbody & thead
+          $tbody.empty();
+          $thead.empty();
+
+          // Generate header dari baris pertama data (index 0)
+          const headerRow = data[0];
+          let headerHtml = "<tr>";
+          headerRow.forEach(cell => {
+            headerHtml += `<th>${cell}</th>`;
+          });
+          headerHtml += "</tr>";
+          $thead.append(headerHtml);
+
+          // Generate isi tbody dari baris ke-2 dst (index 1..)
+          for (let i = 1; i < data.length; i++) {
+            let rowHtml = "<tr>";
+            data[i].forEach(cell => {
+              rowHtml += `<td>${cell}</td>`;
             });
+            rowHtml += "</tr>";
+            $tbody.append(rowHtml);
+          }
 
-            // Init DataTables
-            $("#myTable").DataTable();
-
-            // Buat chart
-            updateChart(statusGiziCount);
+          // Inisialisasi DataTables
+          $('#myTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50],
+            order: [],
+            language: {
+              emptyTable: "Tidak ada data tersedia",
+              lengthMenu: "Tampilkan _MENU_ baris",
+              info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+              search: "Cari:",
+              paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Berikutnya",
+                previous: "Sebelumnya"
+              }
+            }
           });
-
-        let chartInstance = null;
-        function updateChart(dataObj) {
-          // Urutkan label sesuai kategori yang diinginkan
-          const kategori = [
-            "Gizi Baik",
-            "Gizi Kurang",
-            "Gizi Lebih",
-            "Obesitas",
-            "Gizi Buruk",
-            "Tidak Diketahui",
-          ];
-
-          let labels = [];
-          let values = [];
-          let colors = {
-            "Gizi Baik": "#198754",
-            "Gizi Kurang": "#ffc107",
-            "Gizi Lebih": "#dc3545",
-            Obesitas: "#0d6efd",
-            "Gizi Buruk": "#6f42c1",
-            "Tidak Diketahui": "#adb5bd",
-          };
-
-          kategori.forEach((k) => {
-            labels.push(k);
-            values.push(dataObj[k] || 0);
-          });
-
-          let ctx = document.getElementById("chartStatusGizi").getContext("2d");
-          if (chartInstance) chartInstance.destroy();
-
-          chartInstance = new Chart(ctx, {
-            type: "pie",
-            data: {
-              labels: labels,
-              datasets: [
-                {
-                  data: values,
-                  backgroundColor: labels.map((l) => colors[l]),
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { position: "bottom" },
-                datalabels: {
-                  color: "#fff",
-                  font: { weight: "bold" },
-                  formatter: (value) => value,
-                },
-              },
-            },
-            plugins: [ChartDataLabels],
-          });
-        }
-      });
-    </script>
-  </body>
+        })
+        .catch(err => {
+          $tbody.html(`<tr><td colspan="100" class="text-center text-danger">Error mengambil data: ${err.message}</td></tr>`);
+          console.error(err);
+        });
+    });
+  </script>
+</body>
 </html>

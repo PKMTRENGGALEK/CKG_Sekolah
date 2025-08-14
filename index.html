@@ -193,6 +193,48 @@
         background: linear-gradient(135deg, #f15c22, #ff7849);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       }
+      /* Accordion khusus SD */
+      .accordion-button.bg-sd {
+        background: linear-gradient(135deg, #f15c22, #ff7849);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 8px !important;
+        transition: all 0.3s ease-in-out;
+      }
+      .accordion-button.bg-sd:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+      }
+      .accordion-button.bg-sd:focus {
+        box-shadow: none;
+      }
+
+      /* Daftar sekolah */
+      .school-list li a {
+        display: block;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: all 0.25s ease;
+        border-bottom: 1px solid #f1f1f1;
+        font-weight: 500;
+      }
+      .school-list li:last-child a {
+        border-bottom: none;
+      }
+      .school-list li a:hover {
+        background-color: #fdf3ef;
+        padding-left: 16px;
+        color: #f15c22 !important;
+      }
+
+      /* Dark mode support */
+      body.dark-mode .school-list li a {
+        border-bottom: 1px solid #333;
+      }
+      body.dark-mode .school-list li a:hover {
+        background-color: #2c2c2c;
+        color: #ff7849 !important;
+      }
     </style>
   </head>
   <body class="transition-all">
@@ -716,14 +758,14 @@
       </div>
       <!-- rekap data -->
       <div class="container my-5">
-        <div class="col-md-4">
-          <div class="card shadow">
+        <div class="col-md-4 fade-in">
+          <div class="card shadow-sm border-sd">
             <div class="card-body">
               <div class="accordion accordion-flush" id="accordionrekapSD">
-                <div class="accordion-item">
+                <div class="accordion-item border-0">
                   <h2 class="accordion-header" id="headingrekapSD">
                     <button
-                      class="accordion-button collapsed btn btn-outline-danger rounded shadow w-100"
+                      class="accordion-button collapsed bg-sd"
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#collapserekapSD"
@@ -739,148 +781,72 @@
                     class="accordion-collapse collapse"
                     aria-labelledby="headingrekapSD"
                   >
-                    <div class="accordion-body" style="font-size: 14px">
-                      <div class="accordion-body px-3 pt-2 pb-3">
-                        <ul class="list-unstyled mb-0">
-                          <li>
-                            <!-- https://docs.google.com/spreadsheets/d/1noCl1I3hgU1bLtJk3c6VIHjbMOPJih5tG6--3z7cJzk/export?format=xlsx -->
-                            <a
-                              href="EVALUASI/SD/SDNKARANGSOKO1.html"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              ><span class="text-success">
-                            
-                              
-                                <span class="text-success">1. SDN 1 KARANGSOKO</span>
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="EVALUASI/SD/SDN2KARANGSOKO.html"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              ><span class="text-success">2. SDN 2 KARANGSOKO</span>
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                             href="EVALUASI/SD/SDN3KARANGSOKO.html"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              ><span class="text-success">3. SDN 3 KARANGSOKO</span>
-                            </a>
-                          </li>
-                          <!-- <li>
-                           
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >4. SDN 1 SAMBIREJO
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >5. SDN 2 SAMBIREJO
-                            </a>
-                          </li> -->
-                          <li>
-                            <!-- https://docs.google.com/spreadsheets/d/1A9jmBoiW7R52HSq9fjtaxc4mN9OMqJMq8fd1BSEgLyk/export?format=xlsx -->
-                            <a
-                             href="EVALUASI/SD/SDNKELUTAN1.html"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              ><span class="text-success">6. SDN 1 KELUTAN</span>
-                            </a>
-                          </li>
-                          <li>
-                            <!-- https://docs.google.com/spreadsheets/d/1A9jmBoiW7R52HSq9fjtaxc4mN9OMqJMq8fd1BSEgLyk/export?format=xlsx -->
-                            <a
-                             href="EVALUASI/SD/sdn2kelutan,html"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              ><span class="text-success">7. SDN 2 KELUTAN</span>
-                            </a>
-                          </li>
-                          <!-- <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >7. SDN 2 KELUTAN
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >8. SDN 1 NGANTRU
-                            </a>
-                          </li> -->
-                          <li>
-                            <a
-                              href="EVALUASI/SD/SDNNGANTRU2.html"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              ><span class="text-success">9. SDN 2 NGANTRU</span>
-                            </a>
-                          </li>
-                          <!-- <li>
-                            <a
-                              href=""
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              download
-                            >
-                              
-                                >10. SDN 1 TAMANAN
-                            </a>
-                          </li> -->
-                          <li>
-                            <a
-                              href="EVALUASI/SD/SDN2TAMANAN.html"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              ><span class="text-success">11. SDN 2 TAMANAN</span>
-                            </a>
-                          </li>
-
-                          <!-- <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >12. SDN 3 TAMANAN
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >13. SD INTEGRAL LUQMAN AL HAKIM
-                            </a>
-                          </li> -->
-                          <!-- <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >14. SDN 1 SUMBERGEDONG
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >15. SDN 2 SUMBERGEDONG
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >16. SD MUHAMMADIYAH 1 TRENGGALEK
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              class="text-decoration-none text-dark d-block py-1 px-2 rounded hover-link"
-                              >17. MI DARUNNAJAH
-                            </a>
-                          </li> -->
-                        </ul>
-                      </div>
+                    <div class="accordion-body p-0">
+                      <ul class="list-unstyled mb-0 school-list">
+                        <li>
+                          <a
+                            href="EVALUASI/SD/SDNKARANGSOKO1.html"
+                            class="text-success"
+                            >1. SDN 1 KARANGSOKO</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="EVALUASI/SD/SDN2KARANGSOKO.html"
+                            class="text-success"
+                            >2. SDN 2 KARANGSOKO</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="EVALUASI/SD/SDN3KARANGSOKO.html"
+                            class="text-success"
+                            >3. SDN 3 KARANGSOKO</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="EVALUASI/SD/SDN1SAMBIREJO.html"
+                            class="text-success"
+                            >4. SDN 1 SAMBIREJO</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="EVALUASI/SD/SDN2SAMBIREJO.html"
+                            class="text-success"
+                            >5. SDN 2 SAMBIREJO</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="EVALUASI/SD/SDNKELUTAN1.html"
+                            class="text-success"
+                            >6. SDN 1 KELUTAN</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="EVALUASI/SD/sdn2kelutan.html"
+                            class="text-success"
+                            >7. SDN 2 KELUTAN</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="EVALUASI/SD/SDNNGANTRU2.html"
+                            class="text-success"
+                            >9. SDN 2 NGANTRU</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="EVALUASI/SD/SDN2TAMANAN.html"
+                            class="text-success"
+                            >11. SDN 2 TAMANAN</a
+                          >
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>
@@ -888,7 +854,6 @@
             </div>
           </div>
         </div>
-        <!-- next -->
       </div>
 
       <!-- <div class="container my-5">

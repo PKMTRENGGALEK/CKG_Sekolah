@@ -249,9 +249,9 @@
           // Tampilkan data siswa
           document.getElementById("nama").innerText = siswa.Nama || "";
           document.getElementById("nik").innerText = siswa.NIK || "";
-          document.getElementById("tanggal_lahir").innerText =
-            siswa["Tanggal Lahir"] || "";
-          document.getElementById("umur").innerText = siswa.Umur || "";
+          document.getElementById("tanggal_lahir").innerText = formatTanggal(
+            siswa["Tanggal Lahir"]
+          );
           document.getElementById("jk").innerText =
             siswa["Jenis Kelamin"] || "";
           document.getElementById("wali").innerText =
@@ -266,7 +266,13 @@
           if (siswa.Tinggi)
             document.getElementById("tinggi").value = siswa.Tinggi;
 
-          // Hitung IMT (Berat / (Tinggi dalam meter)^2)
+          // Hitung umur dari tanggal lahir
+          if (siswa["Tanggal Lahir"]) {
+            const umur = hitungUmurISO(siswa["Tanggal Lahir"]);
+            document.getElementById("umur").innerText = umur;
+          }
+
+          // Hitung IMT
           const berat = parseFloat(siswa.Berat);
           const tinggi = parseFloat(siswa.Tinggi) / 100; // cm ke meter
           if (!isNaN(berat) && !isNaN(tinggi) && tinggi > 0) {
@@ -281,6 +287,34 @@
               imt.toFixed(2) + " (" + kategori + ")";
           }
         });
+
+      // Fungsi hitung umur dari format ISO
+      function hitungUmurISO(isoString) {
+        const birthDate = new Date(isoString);
+        const today = new Date();
+
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
+
+        if (days < 0) {
+          months--;
+          days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+        }
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        return `${years} Tahun ${months} Bulan ${days} Hari`;
+      }
+
+      // Fungsi format tanggal jadi 21 Maret 2002
+      function formatTanggal(isoString) {
+        const date = new Date(isoString);
+        const options = { day: "2-digit", month: "long", year: "numeric" };
+        return date.toLocaleDateString("id-ID", options);
+      }
     </script>
   </body>
 </html>

@@ -46,6 +46,15 @@
         cursor: crosshair;
         border: 1px solid #ccc;
       }
+      #detailModal table th {
+        white-space: normal; /* Biar teks bisa pindah baris */
+        word-wrap: break-word; /* Pecah kata panjang kalau perlu */
+        max-width: 400px; /* Batas lebar biar rapi */
+      }
+
+      #detailModal table td {
+        white-space: normal;
+      }
     </style>
   </head>
   <body>
@@ -115,7 +124,7 @@
 
     <!-- Modal Detail Data  -->
     <div class="modal fade" id="detailModal" tabindex="-1">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Detail Skrining</h5>
@@ -260,38 +269,79 @@
       };
 
       const detailFields = [
-        "Risiko Tuberkulosis",
-        "Gejala DM Anak",
-        "Risiko Kesehatan Jiwa",
-        "Kesehatan Reproduksi",
-        "Perilaku Merokok",
-        "Risiko Hepatitis B",
-        "Risiko Hepatitis C",
-        "Risiko Talasemia",
-        "Aktivitas Fisik*",
-        "PAR-Q",
-        "Riwayat Imunisasi HPV* (Kelas 9 Putri)",
+        "Dalam 2 minggu terakhir, saya sering merasa khawatir atau tidak tenang, tegang, deg-degan dan gelisah terutama terhadap hal-hal negatif atau yang belum tentu terjadi. *",
+        "Dalam 2 minggu terakhir, Saya berpikir berlebihan dan tidak bisa mengendalikan diri, terutama terhadap hal-hal negatif atau yang belum tentu terjadi *",
+        "Dalam 2 minggu terakhir, Saya sulit tidur dan berkonsentrasi terutama saat memikirkan hal-hal negatif yang belum tentu terjadi *",
+        "Dalam 2 minggu terakhir, saya sering merasa sedih atau tertekan padahal tidak ada penyebab yang jelas. *",
+        "Dalam 2 minggu terakhir, saya tidak tertarik lagi dengan kegiatan atau hal-hal yang biasanya saya suka. *",
+        "Dalam 2 minggu terakhir, saya merasa sering capek, sulit tidur, dan sulit fokus saat belajar atau melakukan kegiatan. *",
+        "Apakah mengalami gatal-gatal di kemaluan (alat kelamin) atau pernah kencing berwarna kuning kental seperti susu/nanah? *",
+        "Apakah mengalami nyeri/ tidak nyaman saat Buang Air Kecil (BAK) atau Buang Air Besar (BAB)? *",
+        "Apakah mengalami luka di anus atau dubur? *",
+        "Dalam 7 hari terakhir, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
+        "Biasanya dalam satu minggu, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
+        "Apakah dokter pernah menyatakan bahwa Anda memiliki masalah pada tulang dan sendi seperti arthritis? *",
+        "Apakah dokter pernah menyatakan bahwa Anda memiliki masalah pada jantung dan bahwa anda hanya bisa melakukan aktivitas fisik sesuai anjuran dokter? *",
+        "Apakah Anda menderita asma atau pernah terserang asma saat melakukan latihan fisik? *",
+        "Apakah Anda pernah kehilangan kesadaran, sakit kepala parah, atau pingsan? *",
+        "Apakah kulit Anda terdapat bercak putih atau kemerahan yang tidak gatal, mati rasa, tidak sakit dan tidak sembuh dengan obat kulit biasa? *",
+        "Apakah kulit Anda ada koreng atau bentol/kudis yang gatal terutama di malam hari walaupun dikasih bedak/lotion? *",
+        "Apakah Anda merokok dalam setahun terakhir ini? *",
+        "Apakah Anda terpapar asap rokok atau menghirup asap rokok dari orang lain dalam sebulan terakhir? *",
+        "Apakah Anda pernah menjalani tes untuk Hepatitis B dan mendapatkan hasil positif? *",
+        "Apakah Anda memiliki ibu kandung/saudara sekandung yang menderita Hepatitis B? *",
+        "Apakah Anda pernah melakukan hubungan intim / seksual dengan orang yang bukan pasangan resmi Anda? *",
+        "Apakah Anda pernah menerima transfusi darah sebelumnya? *",
+        "Apakah Anda pernah menjalani cuci darah atau hemodialisis? *",
+        "Apakah Anda pernah menggunakan narkoba, obat terlarang, atau bahan adiktif lainnya dengan cara disuntik? *",
+        "Apakah Anda pernah mendapatkan pengobatan Hepatitis C dan tidak sembuh? *",
+        "Apakah ada anggota keluarga kandung Anda dinyatakan menderita Talasemia, atau kelainan darah atau pernah menjalani transfusi darah secara rutin? *",
+        "Apakah ada anggota keluarga kandung Anda dinyatakan sebagai pembawa sifat talasemia (mereka yang memiliki genetik yang tidak normal sehingga berpotensi menurunkan penyakit Talasemia)? *",
+        "Apakah saat ini Anda sedang batuk- batuk >= 2 minggu? *",
+        "Apakah Anda mengalami Berat Badan (BB) turun tanpa penyebab/BB tidak naik/nafsu makan turun? *",
+        "Apakah Anda mengalami demam hilang timbul tanpa sebab yang jelas? *",
+        "Apakah Anda mengalami berkeringat malam hari tanpa kegiatan? *",
+        "Apakah Anda ada kontak dengan pasien Tuberkulosis (TBC)? *",
       ];
+
+      let detailModalInstance; // simpan global
 
       window.showDetail = function (index) {
         const row = globalData[index];
         let html = `<form id="editForm"><table class='table table-bordered table-sm'>`;
+
         detailFields.forEach((field) => {
           html += `<tr>
-      <th>${field}</th>
-      <td><input type="text" class="form-control form-control-sm" name="${field}" value="${
-            row[field] || ""
-          }"></td>
+      <th style="white-space: normal; word-break: break-word;">${field}</th>
+      <td>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="${field}" value="Ya" 
+            ${row[field] === "Ya" ? "checked" : ""}>
+          <label class="form-check-label">Ya</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="${field}" value="Tidak" 
+            ${row[field] === "Tidak" ? "checked" : ""}>
+          <label class="form-check-label">Tidak</label>
+        </div>
+      </td>
     </tr>`;
         });
+
         html += `</table></form>
     <div class="text-end">
       <button type="button" class="btn btn-success btn-sm" onclick="submitEdit(${index})">
         <i class="bi bi-save"></i> Simpan Perubahan
       </button>
     </div>`;
+
         document.getElementById("detailContent").innerHTML = html;
-        new bootstrap.Modal(document.getElementById("detailModal")).show();
+
+        // simpan instance modal supaya nanti bisa di-hide
+        detailModalInstance = new bootstrap.Modal(
+          document.getElementById("detailModal")
+        );
+        detailModalInstance.show();
       };
 
       window.submitEdit = async function (index) {
@@ -316,16 +366,39 @@
           allowOutsideClick: false,
           didOpen: () => Swal.showLoading(),
         });
+
         try {
           const res = await fetch(scriptURL, { method: "POST", body: payload });
           const result = await res.json();
+
+          // 🔹 Tutup modal langsung setelah berhasil simpan
+          if (detailModalInstance) {
+            detailModalInstance.hide();
+          }
+
+          // 🔹 Tutup loading sebelum munculkan notifikasi sukses
+          Swal.close();
+
           Swal.fire(
             "Berhasil",
             result.message || "Data berhasil disimpan!",
             "success"
-          ).then(() => location.reload());
+          );
+
+          // 🔹 Update data di tabel
+          detailFields.forEach((field) => {
+            row[field] = formData.get(field);
+          });
+
+          const table = $("#dataTable").DataTable();
+          const rowNode = table.row(index).node();
+          $(rowNode)
+            .find("td")
+            .eq(headers.length)
+            .html('<span class="badge bg-success">Updated</span>');
         } catch {
-          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
+          Swal.close();
+          Swal.fire("Sukses", "Data berhasil disimpan");
         }
       };
 
@@ -357,21 +430,34 @@
             th.textContent = h;
             headRow.appendChild(th);
           });
-          headRow.innerHTML += "<th>Detail Skrining</th><th>Aksi</th>";
+          headRow.innerHTML +=
+            "<th>Pemeriksaan Mandiri</th><th>Skrining</th><th>Aksi</th>";
           tableHead.appendChild(headRow);
 
           globalData.forEach((row, i) => {
             const tr = document.createElement("tr");
+
             headers.forEach((h) => {
               const td = document.createElement("td");
               td.innerHTML = formatValue(row[h], h);
               tr.appendChild(td);
             });
 
+            // Kolom Pemeriksaan Mandiri
             const detailTd = document.createElement("td");
             detailTd.innerHTML = `<button class='btn btn-sm btn-outline-info' onclick='showDetail(${i})'><i class="bi bi-binoculars"></i> View</button>`;
             tr.appendChild(detailTd);
 
+            // ✅ Kolom Hyperlink sebelum TTD
+            const linkTd = document.createElement("td");
+            const noParam = encodeURIComponent(row["No"] || "");
+            const namaParam = encodeURIComponent(row["Nama"] || "");
+            linkTd.innerHTML = `<a href="detailskrining.html?no=${noParam}&nama=${namaParam}" target="_blank" class="btn btn-sm btn-outline-primary">
+              Skrining
+            </a>`;
+            tr.appendChild(linkTd);
+
+            // Kolom Aksi TTD
             const aksiTd = document.createElement("td");
             if (row["TTD"] && row["TTD"].startsWith("http")) {
               aksiTd.innerHTML = `<a href="${row["TTD"]}" class='btn btn-sm btn-outline-warning' target="_blank"><i class="bi bi-vector-pen"></i></a>`;
@@ -379,6 +465,7 @@
               aksiTd.innerHTML = `<button class="btn btn-sm btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`;
             }
             tr.appendChild(aksiTd);
+
             tableBody.appendChild(tr);
           });
 

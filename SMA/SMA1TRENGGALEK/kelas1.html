@@ -313,19 +313,45 @@
         detailFields.forEach((field) => {
           html += `<tr>
       <th style="white-space: normal; word-break: break-word;">${field}</th>
-      <td>
+      <td>`;
+
+          // 🔹 khusus pertanyaan ini jadi input number
+          if (
+            field.includes(
+              "Dalam 7 hari terakhir, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari"
+            )
+          ) {
+            html += `<input type="number" 
+                   class="form-control form-control-sm" 
+                   name="${field}" 
+                   min="0" max="7"
+                   value="${row[field] || ""}">`;
+          } else if (
+            field.includes(
+              "Biasanya dalam satu minggu, berapa hari Anda aktif secara fisik"
+            )
+          ) {
+            html += `<input type="number" 
+                   class="form-control form-control-sm" 
+                   name="${field}" 
+                   min="0" max="7"
+                   value="${row[field] || ""}">`;
+          } else {
+            // default: radio Ya/Tidak
+            html += `
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="${field}" value="Ya" 
+          <input class="form-check-input" type="radio" name="${field}" value="Ya"
             ${row[field] === "Ya" ? "checked" : ""}>
           <label class="form-check-label">Ya</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="${field}" value="Tidak" 
+          <input class="form-check-input" type="radio" name="${field}" value="Tidak"
             ${row[field] === "Tidak" ? "checked" : ""}>
           <label class="form-check-label">Tidak</label>
-        </div>
-      </td>
-    </tr>`;
+        </div>`;
+          }
+
+          html += `</td></tr>`;
         });
 
         html += `</table></form>
@@ -337,7 +363,6 @@
 
         document.getElementById("detailContent").innerHTML = html;
 
-        // simpan instance modal supaya nanti bisa di-hide
         detailModalInstance = new bootstrap.Modal(
           document.getElementById("detailModal")
         );

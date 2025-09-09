@@ -156,9 +156,9 @@
           <!-- Foto & Progress -->
           <div class="col-md-4 text-center">
             <img
-              src="https://pkmtrenggalek.github.io/CKG_Sekolah/SMA/3b48356f-6b37-4dd0-83ed-4b3c4b1e020b.png"
+              src="../../assets/man.png"
               alt="Foto Siswa"
-              class="img-fluid rounded shadow-sm mb-3"
+              class="img-fluid rounded mb-3"
               style="max-width: 120px"
             />
 
@@ -205,6 +205,30 @@
         </div>
       </div>
     </div>
+    <!-- 🔹 Overlay Loading -->
+    <div
+      id="loadingOverlay"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      "
+    >
+      <div
+        class="spinner-border text-primary"
+        role="status"
+        style="width: 4rem; height: 4rem"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
 
     <footer class="fixed-bottom">
       <p>© 2025 Puskesmas Trenggalek | Skrining Kesehatan</p>
@@ -214,6 +238,8 @@
     <script>
       const urlParams = new URLSearchParams(window.location.search);
       const siswaId = urlParams.get("id");
+      const overlay = document.getElementById("loadingOverlay");
+
       let dataAsli = {};
 
       async function fetchWithTimeout(resource, options = {}) {
@@ -319,7 +345,13 @@
             // isi biodata
             $("#nama").text(siswa["Nama"] || "-");
             $("#nik").text(siswa["NIK"] || "-");
-
+            // Ganti foto sesuai jenis kelamin
+            let jk = (siswa["Jk"] || "").toLowerCase();
+            if (jk.includes("p")) {
+              $("img[alt='Foto Siswa']").attr("src", "../../assets/woman.png");
+            } else {
+              $("img[alt='Foto Siswa']").attr("src", "../../assets/man.png");
+            }
             if (siswa["Tanggal Lahir"]) {
               let dateObj = new Date(siswa["Tanggal Lahir"]);
               let formatted = dateObj.toLocaleDateString("id-ID", {
@@ -468,13 +500,19 @@
             );
           }
         } catch (err) {
-          Swal.close();
-          Swal.fire(
-            "⚠ Error",
-            "Gagal mengambil data (timeout / koneksi).",
-            "error"
-          );
           console.error(err);
+          if (overlay) {
+            overlay.innerHTML = `<div class="text-center fw-bold text-danger">
+        ❌ ${err.message}
+      </div>`;
+          }
+        } finally {
+          // 🔹 sembunyikan overlay setelah 500ms
+          if (overlay) {
+            setTimeout(() => {
+              overlay.style.display = "none";
+            }, 500);
+          }
         }
       }
 

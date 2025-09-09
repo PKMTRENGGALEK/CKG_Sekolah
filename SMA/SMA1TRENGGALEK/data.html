@@ -10,64 +10,50 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-      body {
+     body {
         background: linear-gradient(135deg, #e0f2fe, #fef9c3);
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        padding-bottom: 60px;
         font-size: 14px;
+        min-height: 100vh;   /* full screen */
+        display: flex;
+        flex-direction: column;
       }
+
       .header {
         text-align: center;
-        padding: 20px;
+        padding: 15px;
         color: #3b5208;
         font-weight: bold;
       }
-      .card-profile {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin-bottom: 20px;
-      }
+
+      .card-profile,
       .pemeriksaan {
-        background: white;
+        background: #fff;
         border-radius: 15px;
-        padding: 20px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        margin-bottom: 15px;
       }
+
       footer {
-        position: relative;
-        background: transparent;
-        color: #333;
         text-align: center;
-        padding: 15px 0;
-        margin-top: auto;
-      }
-      footer p {
-        margin: 0;
+        padding: 10px 0;
         font-size: 0.9rem;
+        color: #333;
+        background: transparent;
+        margin-top: auto;  /* dorong ke bawah */
       }
+
       #pemeriksaanTable td {
         vertical-align: top;
         padding: 0.5rem 0.75rem;
       }
-      #pemeriksaanTable .form-check {
-        margin-right: 1rem;
-      }
+
       #pemeriksaanTable tr:hover {
         background-color: #f9f9f9;
       }
-      .progress-container {
-        position: relative;
-        width: 120px;
-        height: 120px;
-        margin: 0 auto;
-        border-radius: 50%;
-        background: #eee;
-        overflow: hidden;
-        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
-      }
 
+      /* Progress bulat */
       .progress-container {
         position: relative;
         width: 80px;
@@ -84,6 +70,7 @@
         height: 80px;
         overflow: visible;
       }
+
       .progress-text {
         position: absolute;
         top: 50%;
@@ -94,15 +81,22 @@
         color: #333;
       }
 
-      /* animasi horizontal tetap */
       @keyframes waveMove {
-        0% {
-          transform: translateX(-25%);
-        }
-        100% {
-          transform: translateX(25%);
-        }
+        0% { transform: translateX(-25%); }
+        100% { transform: translateX(25%); }
       }
+
+      /* Scroll dinamis untuk bagian tabel pemeriksaan */
+      #pemeriksaanMandiriWrapper {
+        flex: 1;
+        min-height: 0; /* biar fleksibel */
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        background: #fff;
+        padding: 10px;
+      }
+
     </style>
   </head>
   <body>
@@ -114,97 +108,102 @@
     </div>
 
     <div class="container">
-      <!-- Profil Siswa -->
-
-      <div class="card-profile">
-        <div class="row align-items-center">
-          <!-- Biodata -->
-          <div class="col-md-8">
-            <h6 class="fw-bold text-primary mb-3">📋 Biodata</h6>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between">
-                <span class="fw-semibold">Nama</span>
-                <span id="nama" class="text-muted">-</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span class="fw-semibold">NIK</span>
-                <span id="nik" class="text-muted">-</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span class="fw-semibold">Tanggal Lahir</span>
-                <span id="tgl" class="text-muted">-</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span class="fw-semibold">Umur</span>
-                <span id="umur" class="text-muted">-</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span class="fw-semibold">Jenis Kelamin</span>
-                <span id="jk" class="text-muted">-</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span class="fw-semibold">Nama Ibu/Wali</span>
-                <span id="ibu" class="text-muted">-</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span class="fw-semibold">Nomor Telepon</span>
-                <span id="tiket" class="text-muted">-</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Foto & Progress -->
-          <div class="col-md-4 text-center">
-            <img
-              src="../../assets/man.png"
-              alt="Foto Siswa"
-              class="img-fluid rounded mb-3"
-              style="max-width: 120px"
-            />
-
-            <div class="progress-container mb-2">
-              <svg viewBox="0 0 120 120" class="wave-svg">
-                <path id="wavePath" fill="#4facfe"></path>
-              </svg>
-              <div class="progress-text" id="statusText">0%</div>
-            </div>
-            <span class="text-primary fw-semibold"
-              >Keterselesaian Skrining</span
-            >
-          </div>
-        </div>
+  <!-- Profil Siswa -->
+  <div class="card p-3 shadow-sm mb-3">
+    <div class="row align-items-center g-3">
+      <!-- Biodata -->
+      <div class="col-md-8">
+        <h6 class="fw-bold text-primary mb-2">📋 Biodata</h6>
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item py-1 d-flex justify-content-between">
+            <span class="fw-semibold">Nama</span>
+            <span id="nama" class="text-muted">-</span>
+          </li>
+          <li class="list-group-item py-1 d-flex justify-content-between">
+            <span class="fw-semibold">NIK</span>
+            <span id="nik" class="text-muted">-</span>
+          </li>
+          <li class="list-group-item py-1 d-flex justify-content-between">
+            <span class="fw-semibold">Tanggal Lahir</span>
+            <span id="tgl" class="text-muted">-</span>
+          </li>
+          <li class="list-group-item py-1 d-flex justify-content-between">
+            <span class="fw-semibold">Umur</span>
+            <span id="umur" class="text-muted">-</span>
+          </li>
+          <li class="list-group-item py-1 d-flex justify-content-between">
+            <span class="fw-semibold">Jenis Kelamin</span>
+            <span id="jk" class="text-muted">-</span>
+          </li>
+          <li class="list-group-item py-1 d-flex justify-content-between">
+            <span class="fw-semibold">Nama Ibu/Wali</span>
+            <span id="ibu" class="text-muted">-</span>
+          </li>
+          <li class="list-group-item py-1 d-flex justify-content-between">
+            <span class="fw-semibold">Nomor Telepon</span>
+            <span id="tiket" class="text-muted">-</span>
+          </li>
+        </ul>
       </div>
 
-      <!-- Pemeriksaan Mandiri -->
-      <div class="card mt-4">
-        <div class="card-body">
-          <h5 class="mb-3 text-primary">📝 Pemeriksaan Mandiri</h5>
-          <div class="table-responsive">
-            <table
-              class="table table-bordered table-hover"
-              id="pemeriksaanTable"
-            >
-              <thead class="table-light">
-                <tr>
-                  <th style="width: 70%">Pertanyaan</th>
-                  <th style="width: 10%" class="text-center">Jawaban</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- baris akan diisi oleh JS -->
-              </tbody>
-            </table>
-          </div>
-          <div class="text-end mt-3">
-            <button id="btnSimpan" class="btn btn-success">
-              💾 Simpan Jawaban
-            </button>
+      <!-- Foto & Progress -->
+      <div class="col-md-4">
+  <div class="d-flex justify-content-center align-items-center gap-3">
+    <!-- Foto -->
+    <div class="text-center">
+      <img
+        src="../../assets/man.png"
+        alt="Foto Siswa"
+        class="img-fluid rounded "
+        style="max-width: 80px"
+      />
+      <div class="mt-1 small text-muted"></div>
+    </div>
 
-            <!-- <a href="index.html" class="btn btn-secondary">⬅ Kembali</a> -->
-          </div>
+    <!-- Progress -->
+    <div class="text-center">
+      <div class="progress-container mb-1" style="width: 80px; margin: 0 auto;">
+        <svg viewBox="0 0 120 120" class="wave-svg" style="width: 80px; height: 80px;">
+          <path id="wavePath" fill="#4facfe"></path>
+        </svg>
+        <div class="progress-text small" id="statusText">0%</div>
+      </div>
+      <span class="text-primary fw-semibold small d-block">Keterselesaian</span>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+  <!-- Pemeriksaan Mandiri -->
+  <div class="card shadow-sm">
+    <div class="card-body p-3">
+      <h6 class="mb-2 text-primary fw-bold">📝 Pemeriksaan Mandiri</h6>
+      <div id="pemeriksaanMandiriWrapper" style="max-height: 280px; overflow-y: auto;">
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered table-hover align-middle" id="pemeriksaanTable">
+            <thead class="table-light small">
+              <tr>
+                <th style="width: 70%">Pertanyaan</th>
+                <th style="width: 10%" class="text-center">Jawaban</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- diisi JS -->
+            </tbody>
+          </table>
         </div>
+      </div>
+      <div class="text-end mt-2">
+        <button id="btnSimpan" class="btn btn-sm btn-success shadow-sm">
+          💾 Simpan Jawaban
+        </button>
       </div>
     </div>
+  </div>
+</div>
+
     <!-- 🔹 Overlay Loading -->
     <div
       id="loadingOverlay"
@@ -230,7 +229,7 @@
       </div>
     </div>
 
-    <footer class="fixed-bottom">
+    <footer class="mt-4">
       <p>© 2025 Puskesmas Trenggalek | Skrining Kesehatan</p>
     </footer>
 
@@ -368,7 +367,7 @@
             $("#ibu").text(siswa["Nama Orang Tua/Wali"] || "-");
             $("#tiket").text(siswa["No Telp"] || "-");
 
-            updateWave(siswa["status"]);
+            currentStatus = hitungProgress(); // isi nilai awal
 
             // hitung umur
             if (siswa["Tanggal Lahir"]) {
@@ -439,30 +438,30 @@
                 "Apakah Anda mengalami berkeringat malam hari tanpa kegiatan? *",
                 "Apakah Anda ada kontak dengan pasien Tuberkulosis (TBC)? *",
               ],
-              "<p style='color:red'>📝*PEMERIKSAAN OLEH NAKES</p>": [],
-              "11. Tekanan Darah (Anak Sekolah)": [
+              "<p style='color:blue'>📝*PEMERIKSAAN OLEH NAKES</p>": [],
+              "<p style='color:blue'>11. Tekanan Darah (Anak Sekolah)</p>": [
                 "Tekanan Darah Sistolik *",
                 "Tekanan darah diastolik *",
               ],
-              "12. Skrining Gula Darah (Anak Sekolah)": [
+              "<p style='color:blue'>12. Skrining Gula Darah (Anak Sekolah)</p>": [
                 "Gula Darah Sewaktu (GDS)",
               ],
-              "13. Pemeriksaan Gigi - Anak Sekolah": [
+              "<p style='color:blue'>13. Pemeriksaan Gigi - Anak Sekolah</p>": [
                 "Gigi karies",
                 "Gigi hilang/dicabut",
               ],
-              "14. Skrining Telinga dan Mata - Anak Sekolah": [
+              "<p style='color:blue'>14. Skrining Telinga dan Mata - Anak Sekolah</p>": [
                 "Hasil pemeriksaan tajam pendengaran *",
                 "Pemeriksaan visus mata (snellen chart)",
               ],
-              "15. Hasil Pengukuran Kebugaran Jasmani Anak": [
+              "<p style='color:blue'>15. Hasil Pengukuran Kebugaran Jasmani Anak</p>": [
                 "Hasil pemeriksaan kebugaran jasmani anak *",
               ],
-              "16. Pemeriksaan Hepatitis SMP dan SMA": [
+              "<p style='color:blue'>16. Pemeriksaan Hepatitis SMP dan SMA</p>": [
                 "Hasil Rapid Test Hepatitis B",
                 "Hasil Rapid Test Hepatitis C",
               ],
-              "17. Hasil Pemeriksaan RDT Malaria": [
+              "<p style='color:blue'>17. Hasil Pemeriksaan RDT Malaria</p>": [
                 "Hasil Pemeriksaan RDT Malaria *",
               ],
             };
@@ -500,7 +499,7 @@
                 if (kategori.includes("Aktivitas Fisik")) {
                   inputField = `
                             <div class="d-flex align-items-center">
-                              <input type="number" min="0" max="7" class="form-control"
+                              <input type="number"  class="form-control"
                                 name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
                               <span class="ms-2">(hari) *</span>
                             </div>
@@ -509,7 +508,7 @@
                 if (kategori.includes("Tekanan Darah (Anak Sekolah)")) {
                   inputField = `
                             <div class="d-flex align-items-center">
-                              <input type="number" min="0" max="7" class="form-control"
+                              <input type="number"  class="form-control"
                                 name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
                               <span class="ms-2">mmHg *</span>
                             </div>
@@ -518,7 +517,7 @@
                 if (kategori.includes("Skrining Gula Darah (Anak Sekolah)")) {
                   inputField = `
                             <div class="d-flex align-items-center">
-                              <input type="number" min="0" max="7" class="form-control"
+                              <input type="number"  class="form-control"
                                 name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
                               <span class="ms-2">(mg/dl) *</span>
                             </div>

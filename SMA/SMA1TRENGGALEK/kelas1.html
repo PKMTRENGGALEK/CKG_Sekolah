@@ -318,13 +318,13 @@
                   const hasTTD = row.TTD && row.TTD.trim() !== "";
                   if (hasTTD) {
                     return `
-                    <a href="${row.TTD}" target="_blank" class="btn btn-sm btn-info rounded-pill shadow">
-                      <i class="bi bi-eye"></i> View TTD
+                    <a href="${row.TTD}" target="_blank" class="btn btn-sm btn-warning rounded-pill shadow">
+                      <i class="bi bi-eye"></i> View
                     </a>`;
                   } else {
                     return `
                     <button class="btn btn-sm btn-primary rounded-pill shadow" onclick="openTTDModal(${meta.row})">
-                      <i class="bi bi-pencil"></i> Upload TTD
+                      <i class="bi bi-pencil"></i> TTD
                     </button>`;
                   }
                 },

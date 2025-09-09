@@ -56,15 +56,15 @@
         white-space: normal;
       }
       /* Loading overlay */
-    #loadingOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(255,255,255,0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1050;
-    }
+      #loadingOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+      }
     </style>
   </head>
   <body>
@@ -90,9 +90,9 @@
         class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
       >
         <h4 class="text-success mb-0">
-          <u>Data Siswa Kelas 1 </u>
+          <u>Data Siswa Kelas 1 (X) </u>
         </h4>
-        <div class="d-flex gap-2">
+        <!-- <div class="d-flex gap-2">
           <button
             class="btn btn-sm btn-outline-success shadow"
             id="importExcelBtn"
@@ -106,55 +106,40 @@
           >
             <i class="bi bi-file-earmark-richtext"></i> View Source Data
           </a>
-        </div>
+        </div> -->
       </div>
       <!-- Loading Overlay -->
-  <div id="loadingOverlay">
-    <div class="text-center">
-      <div class="spinner-border text-success mb-3" role="status"></div>
-      <p class="fw-medium text-success">Memuat data siswa...</p>
-    </div>
-  </div>
+      <div id="loadingOverlay">
+        <div class="text-center">
+          <div class="spinner-border text-success mb-3" role="status"></div>
+          <p class="fw-medium text-success">Memuat data siswa...</p>
+        </div>
+      </div>
       <!-- Tabel -->
       <div class="card shadow">
         <div class="card-body">
           <div class="table-responsive">
-      <table id="siswaTable" class="table table-sm table-striped table-bordered align-middle">
-        <thead class="table-success">
-          <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Kelas</th>
-            <th>Jk</th>
-            <th>NIK</th>
-            <th>Tempat Lahir</th>
-            <th>Tanggal Lahir</th>
-            <th>Alamat</th>
-            <th>No Telp</th>
-            <th>Detail</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Detail Data  -->
-    <div class="modal fade" id="detailModal" tabindex="-1">
-      <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Detail Skrining</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div id="detailContent"></div>
+            <table
+              id="siswaTable"
+              class="table table-sm table-striped table-bordered align-middle"
+            >
+              <thead class="table-success">
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Kelas</th>
+                  <th>Jk</th>
+                  <th>NIK</th>
+                  <th>Tempat Lahir</th>
+                  <th>Tanggal Lahir</th>
+                  <th>Alamat</th>
+                  <th>No Telp</th>
+                  <th>Detail</th>
+                  <th>TTD</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -213,88 +198,226 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+      const kelas = "Kelas 1"; // ✅ Sheet yang digunakan
+      const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbxvijgSaKZqTv2I84_wGTL3LTM3MqaPUQY8GNoKc3qvE6y94hI07yI37LxpbijoE6KM/exec";
 
-     <script>
-  const kelas = "Kelas 1"; // ✅ Sheet yang digunakan
-  const scriptURL =
-    "https://script.google.com/macros/s/AKfycbxvijgSaKZqTv2I84_wGTL3LTM3MqaPUQY8GNoKc3qvE6y94hI07yI37LxpbijoE6KM/exec";
+      const canvas = document.getElementById("signaturePad");
+      const ctx = canvas.getContext("2d");
 
-  async function loadData() {
-    const overlay = document.getElementById("loadingOverlay");
-    if (overlay) overlay.style.display = "flex"; // tampilkan overlay kalau ada
+      // Atur ukuran canvas sesuai container
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = 150; // tinggi tetap 150px
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "#000";
+      }
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
 
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // timeout 15 detik
-
-      const res = await fetch(`${scriptURL}?kelas=${encodeURIComponent(kelas)}`, {
-        cache: "no-store",
-        signal: controller.signal,
+      // State menggambar
+      let drawing = false;
+      canvas.addEventListener("mousedown", (e) => {
+        drawing = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
       });
-      clearTimeout(timeoutId);
+      canvas.addEventListener("mousemove", (e) => {
+        if (!drawing) return;
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+      });
+      canvas.addEventListener("mouseup", () => (drawing = false));
+      canvas.addEventListener("mouseleave", () => (drawing = false));
 
-      const json = await res.json();
-      if (!json.success) throw new Error("Gagal memuat data");
+      // Tombol clear
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      });
 
-      const rows = json.data || [];
+      // 🔹 Buka modal TTD
+      window.openTTDModal = (index) => {
+        document.getElementById("rowIndex").value = index;
+        ttdModal.show();
+        setTimeout(() => resizeCanvas(), 300);
+      };
 
-      // Init DataTable
-      $('#siswaTable').DataTable({
-        data: rows,
-        destroy: true,
-        deferRender: true,   // Render hanya saat perlu
-        scroller: true,      // Virtual scrolling
-        columns: [
-          { data: "No" },
-          { data: "Nama" },
-          { data: "Kelas" },
-          { data: "Jk" },
-          { data: "NIK" },
-          { data: "Tempat Lahir" },
-          { 
-            data: "Tanggal Lahir",
-            render: d => {
-              if (!d) return '';
-              const date = new Date(d);
-              if (isNaN(date)) return d;
-              return date.toLocaleDateString('id-ID');
-            }
-          },
-          { data: "Alamat" },
-          { data: "No Telp" },
-          { 
-            data: null,
-            render: row => `
-              <a href="individu.html?id=${encodeURIComponent(row.ID || row.No)}&nama=${encodeURIComponent(row.Nama)}" 
-                 target="_blank" 
-                 class="btn btn-sm btn-success rounded-pill shadow">
-                Detail
-              </a>`
+      // 🔹 View TTD
+      window.viewTTD = (url) => {
+        Swal.fire({
+          title: "Tanda Tangan",
+          html: `<img src="${url}" class="img-fluid rounded border" alt="TTD">`,
+          showConfirmButton: false,
+          showCloseButton: true,
+        });
+      };
+
+      let globalData = []; // simpan data global
+
+      // 🔹 Load data
+      async function loadData() {
+        const overlay = document.getElementById("loadingOverlay");
+        if (overlay) overlay.style.display = "flex";
+
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+          const res = await fetch(
+            `${scriptURL}?kelas=${encodeURIComponent(kelas)}`,
+            { cache: "no-store", signal: controller.signal }
+          );
+          clearTimeout(timeoutId);
+
+          const json = await res.json();
+          if (!json.success) throw new Error("Gagal memuat data");
+
+          globalData = json.data || [];
+
+          $("#siswaTable").DataTable({
+            data: globalData,
+            destroy: true,
+            deferRender: true,
+            scroller: true,
+            columns: [
+              { data: "No" },
+              { data: "Nama" },
+              { data: "Kelas" },
+              { data: "Jk" },
+              { data: "NIK" },
+              { data: "Tempat Lahir" },
+              {
+                data: "Tanggal Lahir",
+                render: (d) => {
+                  if (!d) return "";
+                  const date = new Date(d);
+                  if (isNaN(date)) return d;
+                  return date.toLocaleDateString("id-ID");
+                },
+              },
+              { data: "Alamat" },
+              { data: "No Telp" },
+              {
+                data: null,
+                render: (row) => `
+                  <a href="data.html?id=${encodeURIComponent(
+                    row.ID || row.No
+                  )}&nama=${encodeURIComponent(row.Nama)}" 
+                     target="_blank" 
+                     class="btn btn-sm btn-success rounded-pill shadow">
+                    Detail
+                  </a>`,
+              },
+              {
+                data: null,
+                render: (row, type, data, meta) => {
+                  const hasTTD = row.TTD && row.TTD.trim() !== "";
+                  if (hasTTD) {
+                    return `
+                    <a href="${row.TTD}" target="_blank" class="btn btn-sm btn-info rounded-pill shadow">
+                      <i class="bi bi-eye"></i> View TTD
+                    </a>`;
+                  } else {
+                    return `
+                    <button class="btn btn-sm btn-primary rounded-pill shadow" onclick="openTTDModal(${meta.row})">
+                      <i class="bi bi-pencil"></i> Upload TTD
+                    </button>`;
+                  }
+                },
+              },
+            ],
+            pageLength: 10,
+            lengthMenu: [5, 10, 25],
+            processing: true,
+          });
+        } catch (err) {
+          console.error(err);
+          if (overlay) {
+            overlay.innerHTML = `<div class="text-center text-danger fw-bold">❌ ${err.message}</div>`;
           }
-        ],
-        pageLength: 10,
-        lengthMenu: [5, 10, 25],
-        processing: true
-      });
-
-    } catch (err) {
-      console.error(err);
-      if (overlay) {
-        overlay.innerHTML = `<div class="text-center text-danger fw-bold">❌ ${err.message}</div>`;
+        } finally {
+          if (overlay) {
+            setTimeout(() => {
+              overlay.style.display = "none";
+            }, 500);
+          }
+        }
       }
-    } finally {
-      if (overlay) {
-        setTimeout(() => {
-          overlay.style.display = "none"; // sembunyikan overlay setelah selesai
-        }, 500);
+
+      // Cek apakah canvas kosong
+      function isCanvasEmpty(cnv) {
+        const blank = document.createElement("canvas");
+        blank.width = cnv.width;
+        blank.height = cnv.height;
+        return cnv.toDataURL() === blank.toDataURL();
       }
-    }
-  }
 
-  // Panggil load data saat halaman siap
-  document.addEventListener("DOMContentLoaded", loadData);
-</script>
+      // 🔹 Submit TTD
+      document
+        .getElementById("ttdForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
 
+          if (isCanvasEmpty(canvas)) {
+            Swal.fire(
+              "Kosong",
+              "Silakan tanda tangani dulu sebelum menyimpan.",
+              "warning"
+            );
+            return;
+          }
 
+          Swal.fire({
+            title: "Menyimpan TTD...",
+            text: "Mohon tunggu sebentar.",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
+          });
+
+          const index = document.getElementById("rowIndex").value;
+          const row = globalData[index];
+          const headers = Object.keys(row);
+          const formData = new URLSearchParams();
+          headers.forEach((h) => formData.append(h, row[h]));
+          formData.append("file", canvas.toDataURL("image/png").split(",")[1]);
+          formData.append(
+            "fileName",
+            `ttd_${(row["Nama"] || "tanpa_nama").replace(/\s+/g, "_")}.png`
+          );
+          formData.append("mimeType", "image/png");
+          formData.append("action", "edit");
+          formData.append("index", index);
+          formData.append("kelas", kelas);
+
+          try {
+            const response = await fetch(scriptURL, {
+              method: "POST",
+              body: formData,
+            });
+            const result = await response.json();
+            ttdModal.hide();
+
+            // ✅ Update data di globalData & DataTable langsung
+            globalData[index].TTD = result.fileUrl; // url langsung ke file di Drive
+            const table = $("#siswaTable").DataTable();
+            table.row(index).data(globalData[index]).invalidate().draw(false);
+
+            Swal.fire(
+              "Berhasil",
+              result.message || "TTD berhasil disimpan.",
+              "success"
+            );
+          } catch {
+            Swal.fire("Gagal", "Gagal menyimpan TTD.", "error");
+          }
+        });
+
+      // 🔹 Jalankan setelah DOM siap
+      document.addEventListener("DOMContentLoaded", loadData);
+    </script>
   </body>
 </html>

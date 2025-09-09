@@ -439,6 +439,32 @@
                 "Apakah Anda mengalami berkeringat malam hari tanpa kegiatan? *",
                 "Apakah Anda ada kontak dengan pasien Tuberkulosis (TBC)? *",
               ],
+              "<p style='color:red'>📝*PEMERIKSAAN OLEH NAKES</p>": [],
+              "11. Tekanan Darah (Anak Sekolah)": [
+                "Tekanan Darah Sistolik *",
+                "Tekanan darah diastolik *",
+              ],
+              "12. Skrining Gula Darah (Anak Sekolah)": [
+                "Gula Darah Sewaktu (GDS)",
+              ],
+              "13. Pemeriksaan Gigi - Anak Sekolah": [
+                "Gigi karies",
+                "Gigi hilang/dicabut",
+              ],
+              "14. Skrining Telinga dan Mata - Anak Sekolah": [
+                "Hasil pemeriksaan tajam pendengaran *",
+                "Pemeriksaan visus mata (snellen chart)",
+              ],
+              "15. Hasil Pengukuran Kebugaran Jasmani Anak": [
+                "Hasil pemeriksaan kebugaran jasmani anak *",
+              ],
+              "16. Pemeriksaan Hepatitis SMP dan SMA": [
+                "Hasil Rapid Test Hepatitis B",
+                "Hasil Rapid Test Hepatitis C",
+              ],
+              "17. Hasil Pemeriksaan RDT Malaria": [
+                "Hasil Pemeriksaan RDT Malaria *",
+              ],
             };
 
             const tableBody = $("#pemeriksaanTable tbody");
@@ -447,46 +473,339 @@
 
             for (let kategori in kategoriMap) {
               tableBody.append(`
-                  <tr class="table-secondary">
-                    <td colspan="2" style="font-weight:bold;">${kategori}</td>
-                  </tr>
-                `);
+                        <tr class="table-secondary">
+                          <td colspan="2" style="font-weight:bold;">${kategori}</td>
+                        </tr>
+                      `);
 
               let nomorSub = 1;
               kategoriMap[kategori].forEach((kolom) => {
                 const jawaban = siswa[kolom] || "";
                 let inputField = `
-                    <div class="d-flex justify-content-around">
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="q${nomorGlobal}" value="Ya" ${
+                          <div class="d-flex justify-content-around">
+                            <div class="form-check">
+                              <input class="form-check-input" type="radio" name="q${nomorGlobal}" value="Ya" ${
                   jawaban === "Ya" ? "checked" : ""
                 }>
-                        <label class="form-check-label">Ya</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="q${nomorGlobal}" value="Tidak" ${
+                              <label class="form-check-label">Ya</label>
+                            </div>
+                            <div class="form-check">
+                              <input class="form-check-input" type="radio" name="q${nomorGlobal}" value="Tidak" ${
                   jawaban === "Tidak" ? "checked" : ""
                 }>
-                        <label class="form-check-label">Tidak</label>
-                      </div>
-                    </div>
-                  `;
+                              <label class="form-check-label">Tidak</label>
+                            </div>
+                          </div>
+                        `;
                 if (kategori.includes("Aktivitas Fisik")) {
                   inputField = `
-                      <div class="d-flex align-items-center">
-                        <input type="number" min="0" max="7" class="form-control"
-                          name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
-                        <span class="ms-2">(hari) *</span>
-                      </div>
-                    `;
+                            <div class="d-flex align-items-center">
+                              <input type="number" min="0" max="7" class="form-control"
+                                name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
+                              <span class="ms-2">(hari) *</span>
+                            </div>
+                          `;
+                }
+                if (kategori.includes("Tekanan Darah (Anak Sekolah)")) {
+                  inputField = `
+                            <div class="d-flex align-items-center">
+                              <input type="number" min="0" max="7" class="form-control"
+                                name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
+                              <span class="ms-2">mmHg *</span>
+                            </div>
+                          `;
+                }
+                if (kategori.includes("Skrining Gula Darah (Anak Sekolah)")) {
+                  inputField = `
+                            <div class="d-flex align-items-center">
+                              <input type="number" min="0" max="7" class="form-control"
+                                name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
+                              <span class="ms-2">(mg/dl) *</span>
+                            </div>
+                          `;
                 }
 
+                if (kategori.includes("Pemeriksaan Gigi - Anak Sekolah")) {
+                  if (kolom.includes("Gigi karies")) {
+                    inputField = `
+                            <div class="d-flex justify-content-around">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Ada"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Ada")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Ada</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Tidak Ada"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Tidak Ada")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Tidak Ada</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Dirujuk"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Dirujuk")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Dirujuk</label>
+                              </div>
+                            </div>
+                          `;
+                  } else if (kolom.includes("Gigi hilang/dicabut")) {
+                    inputField = `
+                            <div class="d-flex justify-content-around">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Ya"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Ya")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Ya</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Tidak"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Tidak")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Tidak</label>
+                              </div>
+                            </div>
+                          `;
+                  }
+                }
+
+                if (
+                  kategori.includes("Skrining Telinga dan Mata - Anak Sekolah")
+                ) {
+                  if (kolom.includes("Hasil pemeriksaan tajam pendengaran *")) {
+                    inputField = `
+                            <div class="d-flex justify-content-around">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Normal"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Normal")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Normal</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Tidak Gangguan"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Tidak Gangguan")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Tidak Gangguan</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Dirujuk"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Dirujuk")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Dirujuk</label>
+                              </div>
+                            </div>
+                          `;
+                  } else if (
+                    kolom.includes("Pemeriksaan visus mata (snellen chart)")
+                  ) {
+                    inputField = `
+                            <div class="d-flex justify-content-around">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Visus 6/6 - 6/12"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Visus 6/6 - 6/12")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Visus 6/6 - 6/12</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Visus <6/12"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Visus <6/12")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Visus <6/12</label>
+                              </div>
+                            </div>
+                          `;
+                  }
+                }
+                if (
+                  kategori.includes("Hasil Pengukuran Kebugaran Jasmani Anak")
+                ) {
+                  inputField = `
+                            <div class="d-flex justify-content-around">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Baik"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Baik")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Baik</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value=" Cukup"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes(" Cukup")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label"> Cukup</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Kurang"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Kurang")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Kurang</label>
+                              </div>
+                            </div>
+                          `;
+                }
+                // if (kategori.includes("Pemeriksaan Hepatitis SMP dan SMA")) {
+                //   inputField = `
+                //             <div class="d-flex justify-content-around">
+                //               <div class="form-check">
+                //                 <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="HBsAg Non Reaktif"
+                //                   ${
+                //                     Array.isArray(jawaban) &&
+                //                     jawaban.includes("HBsAg Non Reaktif")
+                //                       ? "checked"
+                //                       : ""
+                //                   }>
+                //                 <label class="form-check-label">HBsAg Non Reaktif</label>
+                //               </div>
+                //               <div class="form-check">
+                //                 <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value=" HBsAg Reaktif"
+                //                   ${
+                //                     Array.isArray(jawaban) &&
+                //                     jawaban.includes(" HBsAg Reaktif")
+                //                       ? "checked"
+                //                       : ""
+                //                   }>
+                //                 <label class="form-check-label"> HBsAg Reaktif</label>
+                //               </div>
+                //             </div>
+                //           `;
+                // }
+                if (kategori.includes("Pemeriksaan Hepatitis SMP dan SMA")) {
+                  if (kolom.includes("Hasil Rapid Test Hepatitis B")) {
+                    inputField = `
+                            <div class="d-flex justify-content-around">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="HBsAg Non Reaktif"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("HBsAg Non Reaktif")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">HBsAg Non Reaktif</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value=" HBsAg Reaktif"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes(" HBsAg Reaktif")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label"> HBsAg Reaktif</label>
+                              </div>
+                            </div>
+                          `;
+                  } else if (kolom.includes("Hasil Rapid Test Hepatitis C")) {
+                    inputField = `
+                            <div class="d-flex justify-content-around">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Anti HCV Non Reaktif"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Anti HCV Non Reaktif")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Anti HCV Non Reaktif</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Anti HCV Reaktif"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Anti HCV Reaktif")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Anti HCV Reaktif</label>
+                              </div>
+                            </div>
+                          `;
+                  }
+                }
+                if (kategori.includes("Hasil Pemeriksaan RDT Malaria")) {
+                  inputField = `
+                            <div class="d-flex justify-content-around">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value="Reaktif"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes("Reaktif")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label">Reaktif</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="q${nomorGlobal}[]" value=" Non-Reaktif"
+                                  ${
+                                    Array.isArray(jawaban) &&
+                                    jawaban.includes(" Non-Reaktif")
+                                      ? "checked"
+                                      : ""
+                                  }>
+                                <label class="form-check-label"> Non-Reaktif</label>
+                              </div>
+                             
+                            </div>
+                          `;
+                }
                 tableBody.append(`
-                    <tr>
-                      <td style="padding-left:20px;">${nomorSub}. ${kolom}</td>
-                      <td style="width:10%;">${inputField}</td>
-                    </tr>
-                  `);
+                          <tr>
+                            <td style="padding-left:20px;">${nomorSub}. ${kolom}</td>
+                            <td style="width:10%;">${inputField}</td>
+                          </tr>
+                        `);
                 nomorSub++;
                 nomorGlobal++;
               });
@@ -503,8 +822,8 @@
           console.error(err);
           if (overlay) {
             overlay.innerHTML = `<div class="text-center fw-bold text-danger">
-        ❌ ${err.message}
-      </div>`;
+              ❌ ${err.message}
+            </div>`;
           }
         } finally {
           // 🔹 sembunyikan overlay setelah 500ms

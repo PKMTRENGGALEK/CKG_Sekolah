@@ -323,6 +323,10 @@
       updateWave();
 
       async function loadData() {
+        const siswaId = urlParams.get("id");
+        const siswaNama = urlParams.get("nama");
+        const siswaKelas = urlParams.get("kelas") || "Kelas 1"; // default ke Kelas 2
+
         try {
           let res;
           const cacheKey = "skrining_data_" + siswaId; // ✅ cache per siswa
@@ -332,7 +336,7 @@
             res = JSON.parse(cache);
           } else {
             const response = await fetchWithTimeout(
-              "https://script.google.com/macros/s/AKfycbxvijgSaKZqTv2I84_wGTL3LTM3MqaPUQY8GNoKc3qvE6y94hI07yI37LxpbijoE6KM/exec?kelas=Kelas 1"
+              "https://script.google.com/macros/s/AKfycbyMNO27yTJNERWL6jsyWQGjdC0--HRofQjecUCeR8PJ9YHk4zgQLL0AQy170-r56aLAJg/exec?kelas=Kelas 1"
             );
             res = await response.json();
             if (res?.success)
@@ -1005,7 +1009,7 @@
 
         try {
           const response = await fetch(
-            "https://script.google.com/macros/s/AKfycbxvijgSaKZqTv2I84_wGTL3LTM3MqaPUQY8GNoKc3qvE6y94hI07yI37LxpbijoE6KM/exec?kelas=Kelas 1",
+            "https://script.google.com/macros/s/AKfycbyMNO27yTJNERWL6jsyWQGjdC0--HRofQjecUCeR8PJ9YHk4zgQLL0AQy170-r56aLAJg/exec?kelas=Kelas 1",
             { method: "POST", body: new URLSearchParams(data) }
           );
           const json = await response.json();

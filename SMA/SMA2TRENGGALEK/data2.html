@@ -321,18 +321,33 @@
 
       // mulai animasi sekali
       updateWave();
+      function clearOldCache(currentKey) {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key.startsWith("skrining_data_") && key !== currentKey) {
+            localStorage.removeItem(key);
+          }
+        }
+      }
 
       async function loadData() {
         try {
+          const siswaId = urlParams.get("id");
+          const siswaNama = urlParams.get("nama");
+          const siswaKelas = urlParams.get("kelas") || "Kelas 2"; // default ke Kelas 2
+
           let res;
-          const cacheKey = "skrining_data_" + siswaId; // ✅ cache per siswa
+          const cacheKey = `skrining_data_${siswaKelas}_${siswaId}`; // ✅ cache per siswa
+          // 🔹 Hapus cache siswa lain
+          clearOldCache(cacheKey);
+
           const cache = localStorage.getItem(cacheKey);
 
           if (cache) {
             res = JSON.parse(cache);
           } else {
             const response = await fetchWithTimeout(
-              "https://script.google.com/macros/s/AKfycbxvijgSaKZqTv2I84_wGTL3LTM3MqaPUQY8GNoKc3qvE6y94hI07yI37LxpbijoE6KM/exec?kelas=Kelas 1"
+              "https://script.google.com/macros/s/AKfycby3uuTspwCueH3l8QblL5PELBcwLCwVeAcwSVedjj_iTgnBjOko8UofuYfUW4ktV7Jvzg/exec?kelas=Kelas 2"
             );
             res = await response.json();
             if (res?.success)
@@ -990,7 +1005,7 @@
           if (pertanyaan) data[pertanyaan] = jawaban;
         });
 
-        data["kelas"] = "Kelas 1";
+        data["kelas"] = "Kelas 2";
         data["action"] = "edit";
         data["index"] = dataAsli.index; // ✅ tambahkan index agar tidak error
 
@@ -1005,7 +1020,7 @@
 
         try {
           const response = await fetch(
-            "https://script.google.com/macros/s/AKfycbxvijgSaKZqTv2I84_wGTL3LTM3MqaPUQY8GNoKc3qvE6y94hI07yI37LxpbijoE6KM/exec?kelas=Kelas 1",
+            "https://script.google.com/macros/s/AKfycby3uuTspwCueH3l8QblL5PELBcwLCwVeAcwSVedjj_iTgnBjOko8UofuYfUW4ktV7Jvzg/exec?kelas=Kelas 2",
             { method: "POST", body: new URLSearchParams(data) }
           );
           const json = await response.json();

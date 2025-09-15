@@ -65,7 +65,6 @@
         align-items: center;
         z-index: 1050;
       }
-      
     </style>
   </head>
   <body>
@@ -411,7 +410,9 @@
               "Berhasil",
               result.message || "TTD berhasil disimpan.",
               "success"
-            );
+            ).then(() => {
+              location.reload(); // ✅ reload halaman setelah user klik OK
+            });
           } catch {
             Swal.fire("Gagal", "Gagal menyimpan TTD.", "error");
           }

@@ -205,7 +205,7 @@
       const scriptURL =
         "https://script.google.com/macros/s/AKfycby3uuTspwCueH3l8QblL5PELBcwLCwVeAcwSVedjj_iTgnBjOko8UofuYfUW4ktV7Jvzg/exec";
 
-      const canvas = document.getElementById("signaturePad");
+    const canvas = document.getElementById("signaturePad");
       const ctx = canvas.getContext("2d");
 
       // Atur ukuran canvas sesuai container
@@ -305,7 +305,7 @@
               {
                 data: null,
                 render: (row) => `
-                  <a href="data3.html?id=${encodeURIComponent(
+                  <a href="data.html?id=${encodeURIComponent(
                     row.ID || row.No
                   )}&nama=${encodeURIComponent(row.Nama)}" 
                      target="_blank" 

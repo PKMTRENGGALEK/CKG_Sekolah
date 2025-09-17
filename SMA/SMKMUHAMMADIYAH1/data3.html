@@ -347,7 +347,7 @@
             res = JSON.parse(cache);
           } else {
             const response = await fetchWithTimeout(
-              "https://script.google.com/macros/s/AKfycbyMNO27yTJNERWL6jsyWQGjdC0--HRofQjecUCeR8PJ9YHk4zgQLL0AQy170-r56aLAJg/exec?kelas=Kelas 3"
+              "https://script.google.com/macros/s/AKfycbyMNO27yTJNERWL6jsyWQGjdC0--HRofQjecUCeR8PJ9YHk4zgQLL0AQy170-r56aLAJg/exec?kelas=${siswaKelas}"
             );
             res = await response.json();
             if (res?.success)

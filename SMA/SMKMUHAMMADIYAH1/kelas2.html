@@ -72,8 +72,7 @@
     <nav class="navbar navbar-light bg-white bg-gradient fixed-top shadow">
       <div class="container d-flex justify-content-between align-items-center">
         <span class="navbar-brand mb-0 h5 text-success">
-          <i class="bi bi-bar-chart-line"></i> Register PKG Siswa SMK
-          MUHAMMADIYAH 1 TRENGGALEK
+          <i class="bi bi-bar-chart-line"></i> Register PKG Siswa SMK MUHAMMADIYAH 1
         </span>
         <button
           onclick="history.back()"
@@ -90,7 +89,7 @@
         class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
       >
         <h4 class="text-success mb-0">
-          <u>Data Siswa Kelas 2 </u>
+          <u>Data Siswa kelas 2 (X) </u>
         </h4>
         <!-- <div class="d-flex gap-2">
           <button
@@ -135,7 +134,7 @@
                   <th>Alamat</th>
                   <th>No Telp</th>
                   <th>Detail</th>
-                  <th>TTD</th>
+                  <th width="60px">TTD</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -201,9 +200,10 @@
 
     <script>
       const kelas = "Kelas 2"; // ✅ Sheet yang digunakan
+      const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbyMNO27yTJNERWL6jsyWQGjdC0--HRofQjecUCeR8PJ9YHk4zgQLL0AQy170-r56aLAJg/exec";
-      const canvas = document.getElementById("signaturePad");
+     const canvas = document.getElementById("signaturePad");
       const ctx = canvas.getContext("2d");
 
       // Atur ukuran canvas sesuai container
@@ -303,7 +303,7 @@
               {
                 data: null,
                 render: (row) => `
-                  <a href="data2.html?id=${encodeURIComponent(
+                  <a href="data.html?id=${encodeURIComponent(
                     row.ID || row.No
                   )}&nama=${encodeURIComponent(row.Nama)}" 
                      target="_blank" 

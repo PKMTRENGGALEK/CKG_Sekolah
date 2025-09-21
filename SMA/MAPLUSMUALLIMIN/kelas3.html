@@ -46,6 +46,25 @@
         cursor: crosshair;
         border: 1px solid #ccc;
       }
+      #detailModal table th {
+        white-space: normal; /* Biar teks bisa pindah baris */
+        word-wrap: break-word; /* Pecah kata panjang kalau perlu */
+        max-width: 400px; /* Batas lebar biar rapi */
+      }
+
+      #detailModal table td {
+        white-space: normal;
+      }
+      /* Loading overlay */
+      #loadingOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+      }
     </style>
   </head>
   <body>
@@ -53,8 +72,7 @@
     <nav class="navbar navbar-light bg-white bg-gradient fixed-top shadow">
       <div class="container d-flex justify-content-between align-items-center">
         <span class="navbar-brand mb-0 h5 text-success">
-          <i class="bi bi-bar-chart-line"></i> Register PKG Siswa MA PLUS
-          MUALLIMIN MUALLIMAT AR-RIDLWAN
+          <i class="bi bi-bar-chart-line"></i> Register PKG Siswa MA Plus Muallimin
         </span>
         <button
           onclick="history.back()"
@@ -73,60 +91,40 @@
         <h4 class="text-success mb-0">
           <u>Data Siswa Kelas 3 </u>
         </h4>
-        <div class="d-flex gap-2">
-          <button
-            class="btn btn-sm btn-outline-success shadow"
-            id="importExcelBtn"
-          >
-            <i class="bi bi-upload"></i> Import Excel
-          </button>
-          <a
-            href="https://docs.google.com/spreadsheets/d/1t-xgYvuAQ9tYFd_DGhC_YP0hGVNqpTyXgYDBHF0DtK8/edit?usp=sharing"
-            target="_blank"
-            class="btn btn-outline-danger btn-sm shadow"
-          >
-            <i class="bi bi-file-earmark-richtext"></i> View Source Data
-          </a>
+       
+      </div>
+      <!-- Loading Overlay -->
+      <div id="loadingOverlay">
+        <div class="text-center">
+          <div class="spinner-border text-success mb-3" role="status"></div>
+          <p class="fw-medium text-success">Memuat data siswa...</p>
         </div>
       </div>
-
       <!-- Tabel -->
       <div class="card shadow">
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table table-bordered table-sm" id="dataTable">
-              <thead id="tableHead" class="table-success bg-gradient"></thead>
-              <tbody id="tableBody">
-                <tr class="text-center">
-                  <td colspan="100%">
-                    <div
-                      class="spinner-border text-primary"
-                      role="status"
-                    ></div>
-                    <div>Memuat data...</div>
-                  </td>
+            <table
+              id="siswaTable"
+              class="table table-sm table-striped table-bordered align-middle"
+            >
+              <thead class="table-success">
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Kelas</th>
+                  <th>Jk</th>
+                  <th>NIK</th>
+                  <th>Tempat Lahir</th>
+                  <th>Tanggal Lahir</th>
+                  <th>Alamat</th>
+                  <th>No Telp</th>
+                  <th>Detail</th>
+                  <th width="60px">TTD</th>
                 </tr>
-              </tbody>
+              </thead>
+              <tbody></tbody>
             </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Detail Data  -->
-    <div class="modal fade" id="detailModal" tabindex="-1">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Detail Skrining</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div id="detailContent"></div>
           </div>
         </div>
       </div>
@@ -188,240 +186,162 @@
 
     <script>
       const kelas = "Kelas 3"; // ✅ Sheet yang digunakan
+      const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbyf-odFmMCBgoOP2_3GCSJoqKPDxs7jilX9bG5u0IULknZfzxhg_ap8DpQ6jaXwPdoKHg/exec";
-
-      const getScriptURL = () =>
-        `${scriptURL}?kelas=${encodeURIComponent(kelas)}`;
-      let globalData = [];
-
-      const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
-      const canvas = document.getElementById("signaturePad");
+     const canvas = document.getElementById("signaturePad");
       const ctx = canvas.getContext("2d");
-      let drawing = false;
 
+      // Atur ukuran canvas sesuai container
       function resizeCanvas() {
-        const parent = canvas.parentElement;
-        canvas.width = parent.offsetWidth;
-        canvas.height = 150;
-        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-
-      window.addEventListener("resize", resizeCanvas);
-
-      canvas.addEventListener("mousedown", () => (drawing = true));
-      canvas.addEventListener("mouseup", () => {
-        drawing = false;
-        ctx.beginPath();
-      });
-      canvas.addEventListener("mousemove", draw);
-
-      canvas.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        drawing = true;
-      });
-      canvas.addEventListener("touchend", (e) => {
-        e.preventDefault();
-        drawing = false;
-        ctx.beginPath();
-      });
-      canvas.addEventListener("touchmove", drawTouch);
-
-      function draw(e) {
-        if (!drawing) return;
         const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = 150; // tinggi tetap 150px
         ctx.lineWidth = 2;
         ctx.lineCap = "round";
         ctx.strokeStyle = "#000";
-        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        ctx.stroke();
+      }
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
+      // State menggambar
+      let drawing = false;
+      canvas.addEventListener("mousedown", (e) => {
+        drawing = true;
         ctx.beginPath();
-        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-      }
+        ctx.moveTo(e.offsetX, e.offsetY);
+      });
+      canvas.addEventListener("mousemove", (e) => {
+        if (!drawing) return;
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+      });
+      canvas.addEventListener("mouseup", () => (drawing = false));
+      canvas.addEventListener("mouseleave", () => (drawing = false));
 
-      function drawTouch(e) {
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        if (drawing) {
-          ctx.lineWidth = 2;
-          ctx.lineCap = "round";
-          ctx.strokeStyle = "#000";
-          ctx.lineTo(x, y);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-        }
-        e.preventDefault();
-      }
-
-      document.getElementById("clearBtn").onclick = () => {
+      // Tombol clear
+      document.getElementById("clearBtn").addEventListener("click", () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-      };
+      });
 
-      const detailFields = [
-        "Risiko Tuberkulosis",
-        "Gejala DM Anak",
-        "Risiko Kesehatan Jiwa",
-        "Kesehatan Reproduksi",
-        "Perilaku Merokok",
-        "Risiko Hepatitis B",
-        "Risiko Hepatitis C",
-        "Risiko Talasemia",
-        "Aktivitas Fisik*",
-        "PAR-Q",
-        "Riwayat Imunisasi HPV* (Kelas 9 Putri)",
-      ];
-      window.showDetail = function (index) {
-        const row = globalData[index];
-        let html = `<form id="editForm"><table class='table table-bordered table-sm'>`;
-        detailFields.forEach((field) => {
-          html += `<tr>
-      <th>${field}</th>
-      <td><input type="text" class="form-control form-control-sm" name="${field}" value="${
-            row[field] || ""
-          }"></td>
-    </tr>`;
-        });
-        html += `</table></form>
-    <div class="text-end">
-      <button type="button" class="btn btn-success btn-sm" onclick="submitEdit(${index})">
-        <i class="bi bi-save"></i> Simpan Perubahan
-      </button>
-    </div>`;
-        document.getElementById("detailContent").innerHTML = html;
-        new bootstrap.Modal(document.getElementById("detailModal")).show();
-      };
-
-      window.submitEdit = async function (index) {
-        const formEl = document.getElementById("editForm");
-        const formData = new FormData(formEl);
-        const row = globalData[index];
-        const payload = new URLSearchParams();
-
-        Object.keys(row).forEach((k) => {
-          if (!detailFields.includes(k)) payload.append(k, row[k]);
-        });
-        detailFields.forEach((field) => {
-          payload.append(field, formData.get(field));
-        });
-
-        payload.append("action", "edit");
-        payload.append("index", index);
-        payload.append("kelas", kelas); // ✅ kirim kelas
-
-        Swal.fire({
-          title: "Menyimpan...",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
-        try {
-          const res = await fetch(scriptURL, { method: "POST", body: payload });
-          const result = await res.json();
-          Swal.fire(
-            "Berhasil",
-            result.message || "Data berhasil disimpan!",
-            "success"
-          ).then(() => location.reload());
-        } catch {
-          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
-        }
-      };
-
-      async function loadData() {
-        try {
-          const res = await fetch(getScriptURL());
-          const result = await res.json();
-          globalData = result.data || result;
-
-          const headers = (
-            result.headers || Object.keys(globalData[0] || {})
-          ).filter((h) => h !== "TTD" && !detailFields.includes(h));
-
-          const tableHead = document.getElementById("tableHead");
-          const tableBody = document.getElementById("tableBody");
-          tableHead.innerHTML = "";
-          tableBody.innerHTML = "";
-
-          if (globalData.length === 0) {
-            tableHead.innerHTML = "<tr><th class='text-center'>Info</th></tr>";
-            tableBody.innerHTML =
-              "<tr><td class='text-center text-muted'>Data kosong</td></tr>";
-            return;
-          }
-
-          const headRow = document.createElement("tr");
-          headers.forEach((h) => {
-            const th = document.createElement("th");
-            th.textContent = h;
-            headRow.appendChild(th);
-          });
-          headRow.innerHTML += "<th>Detail Skrining</th><th>Aksi</th>";
-          tableHead.appendChild(headRow);
-
-          globalData.forEach((row, i) => {
-            const tr = document.createElement("tr");
-            headers.forEach((h) => {
-              const td = document.createElement("td");
-              td.innerHTML = formatValue(row[h], h);
-              tr.appendChild(td);
-            });
-
-            const detailTd = document.createElement("td");
-            detailTd.innerHTML = `<button class='btn btn-sm btn-outline-info' onclick='showDetail(${i})'><i class="bi bi-binoculars"></i> View</button>`;
-            tr.appendChild(detailTd);
-
-            const aksiTd = document.createElement("td");
-            if (row["TTD"] && row["TTD"].startsWith("http")) {
-              aksiTd.innerHTML = `<a href="${row["TTD"]}" class='btn btn-sm btn-outline-warning' target="_blank"><i class="bi bi-vector-pen"></i></a>`;
-            } else {
-              aksiTd.innerHTML = `<button class="btn btn-sm btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`;
-            }
-            tr.appendChild(aksiTd);
-            tableBody.appendChild(tr);
-          });
-
-          $("#dataTable").DataTable({
-            destroy: true,
-            responsive: true,
-            order: [],
-            language: {
-              url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json",
-            },
-            columnDefs: [{ targets: "_all", className: "text-center" }],
-          });
-        } catch (error) {
-          console.error(error);
-          Swal.fire(
-            "Gagal",
-            "Gagal memuat data. Periksa koneksi atau scriptURL.",
-            "error"
-          );
-        }
-      }
-
-      function formatValue(value, header) {
-        if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-          const date = new Date(value);
-          return date.toLocaleDateString("id-ID");
-        }
-        return value;
-      }
-
-      function isCanvasEmpty(canvas) {
-        const blank = document.createElement("canvas");
-        blank.width = canvas.width;
-        blank.height = canvas.height;
-        return canvas.toDataURL() === blank.toDataURL();
-      }
-
+      // 🔹 Buka modal TTD
       window.openTTDModal = (index) => {
         document.getElementById("rowIndex").value = index;
         ttdModal.show();
         setTimeout(() => resizeCanvas(), 300);
       };
 
+      // 🔹 View TTD
+      window.viewTTD = (url) => {
+        Swal.fire({
+          title: "Tanda Tangan",
+          html: `<img src="${url}" class="img-fluid rounded border" alt="TTD">`,
+          showConfirmButton: false,
+          showCloseButton: true,
+        });
+      };
+
+      let globalData = []; // simpan data global
+
+      // 🔹 Load data
+      async function loadData() {
+        const overlay = document.getElementById("loadingOverlay");
+        if (overlay) overlay.style.display = "flex";
+
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+          const res = await fetch(
+            `${scriptURL}?kelas=${encodeURIComponent(kelas)}`,
+            { cache: "no-store", signal: controller.signal }
+          );
+          clearTimeout(timeoutId);
+
+          const json = await res.json();
+          if (!json.success) throw new Error("Gagal memuat data");
+
+          globalData = json.data || [];
+
+          $("#siswaTable").DataTable({
+            data: globalData,
+            destroy: true,
+            deferRender: true,
+            scroller: true,
+            columns: [
+              { data: "No" },
+              { data: "Nama" },
+              { data: "Kelas" },
+              { data: "Jk" },
+              { data: "NIK" },
+              { data: "Tempat Lahir" },
+              {
+                data: "Tanggal Lahir",
+                render: (d) => {
+                  if (!d) return "";
+                  const date = new Date(d);
+                  if (isNaN(date)) return d;
+                  return date.toLocaleDateString("id-ID");
+                },
+              },
+              { data: "Alamat" },
+              { data: "No Telp" },
+              {
+                data: null,
+                render: (row) => `
+                  <a href="data3.html?id=${encodeURIComponent(
+                    row.ID || row.No
+                  )}&nama=${encodeURIComponent(row.Nama)}" 
+                     target="_blank" 
+                     class="btn btn-sm btn-success rounded-pill shadow">
+                    Detail
+                  </a>`,
+              },
+              {
+                data: null,
+                render: (row, type, data, meta) => {
+                  const hasTTD = row.TTD && row.TTD.trim() !== "";
+                  if (hasTTD) {
+                    return `
+                    <a href="${row.TTD}" target="_blank" class="btn btn-sm btn-warning rounded-pill shadow">
+                      <i class="bi bi-eye"></i> View
+                    </a>`;
+                  } else {
+                    return `
+                    <button class="btn btn-sm btn-primary rounded-pill shadow" onclick="openTTDModal(${meta.row})">
+                      <i class="bi bi-pencil"></i> TTD
+                    </button>`;
+                  }
+                },
+              },
+            ],
+            pageLength: 10,
+            lengthMenu: [5, 10, 25],
+            processing: true,
+          });
+        } catch (err) {
+          console.error(err);
+          if (overlay) {
+            overlay.innerHTML = `<div class="text-center text-danger fw-bold">❌ ${err.message}</div>`;
+          }
+        } finally {
+          if (overlay) {
+            setTimeout(() => {
+              overlay.style.display = "none";
+            }, 500);
+          }
+        }
+      }
+
+      // Cek apakah canvas kosong
+      function isCanvasEmpty(cnv) {
+        const blank = document.createElement("canvas");
+        blank.width = cnv.width;
+        blank.height = cnv.height;
+        return cnv.toDataURL() === blank.toDataURL();
+      }
+
+      // 🔹 Submit TTD
       document
         .getElementById("ttdForm")
         .addEventListener("submit", async function (e) {
@@ -456,7 +376,7 @@
           formData.append("mimeType", "image/png");
           formData.append("action", "edit");
           formData.append("index", index);
-          formData.append("kelas", kelas); // ✅ kelas dikirim juga
+          formData.append("kelas", kelas);
 
           try {
             const response = await fetch(scriptURL, {
@@ -465,70 +385,26 @@
             });
             const result = await response.json();
             ttdModal.hide();
+
+            // ✅ Update data di globalData & DataTable langsung
+            globalData[index].TTD = result.fileUrl; // url langsung ke file di Drive
+            const table = $("#siswaTable").DataTable();
+            table.row(index).data(globalData[index]).invalidate().draw(false);
+
             Swal.fire(
               "Berhasil",
               result.message || "TTD berhasil disimpan.",
               "success"
-            ).then(() => location.reload());
+            ).then(() => {
+              location.reload(); // ✅ reload halaman setelah user klik OK
+            });
           } catch {
             Swal.fire("Gagal", "Gagal menyimpan TTD.", "error");
           }
         });
 
-      $(document).on("click", "#importExcelBtn", function () {
-        $("#excelFileInput").click();
-      });
-
-      $("#excelFileInput").on("change", function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        Swal.fire({
-          title: "Mengimpor...",
-          text: "Mohon tunggu hingga proses selesai.",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-          const promises = jsonData.map((item) => {
-            const formData = new URLSearchParams();
-            for (const key in item) {
-              formData.append(key, item[key]);
-            }
-            formData.append("action", "add");
-            formData.append("kelas", kelas); // ✅ kirim kelas juga
-
-            return fetch(scriptURL, {
-              method: "POST",
-              body: formData,
-            });
-          });
-
-          Promise.all(promises)
-            .then(() => {
-              Swal.fire(
-                "Sukses",
-                "Data Excel berhasil diimpor!",
-                "success"
-              ).then(() => location.reload());
-            })
-            .catch((err) => {
-              console.error("Gagal kirim data Excel", err);
-              Swal.fire("Gagal", "Terjadi kesalahan saat impor data.", "error");
-            });
-        };
-        reader.readAsArrayBuffer(file);
-      });
-
-      loadData(); // 🚀 panggil saat pertama kali
+      // 🔹 Jalankan setelah DOM siap
+      document.addEventListener("DOMContentLoaded", loadData);
     </script>
   </body>
 </html>

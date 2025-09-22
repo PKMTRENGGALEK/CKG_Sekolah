@@ -405,6 +405,15 @@
             }
             // generate pertanyaan
             const kategoriMap = {
+              "<p style='color:purple'>📝*Data Individu</p>": [],
+              "<p style='color:purple'>1. NIK Siswa</p>": ["NIK"],
+              "<p style='color:purple'>2. Tanggal Lahir</p>": ["Tanggal Lahir"],
+              "<p style='color:purple'>3. No Telp</p>": ["No Telp"],
+              "<p style='color:purple'>4. Tinggi dan Berat </p>": [
+                "Tinggi",
+                "Berat",
+              ],
+              "<p >📝*Data Skrining</p>": [],
               "1. Gejala Cemas Remaja": [
                 "Dalam 2 minggu terakhir, saya sering merasa khawatir atau tidak tenang, tegang, deg-degan dan gelisah terutama terhadap hal-hal negatif atau yang belum tentu terjadi. *",
                 "Dalam 2 minggu terakhir, Saya berpikir berlebihan dan tidak bisa mengendalikan diri, terutama terhadap hal-hal negatif atau yang belum tentu terjadi *",
@@ -501,6 +510,51 @@
                 "Hasil Pemeriksaan RDT Malaria *",
               ],
             };
+            function parseTanggal(input) {
+              if (!input) return "";
+
+              // 1) Coba pakai Date bawaan (bisa handle "09 Agustus 2009" dan "1-Sep-09")
+              let parsed = new Date(input);
+              if (!isNaN(parsed)) {
+                return parsed.toISOString().split("T")[0]; // YYYY-MM-DD
+              }
+
+              // 2) Format dd/mm/yyyy
+              if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input)) {
+                const [d, m, y] = input.split("/");
+                return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+              }
+
+              // 3) Format dd-mm-yyyy
+              if (/^\d{1,2}-\d{1,2}-\d{4}$/.test(input)) {
+                const [d, m, y] = input.split("-");
+                return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+              }
+
+              // 4) Format dd-mmm-yy (contoh: 1-Sep-09)
+              if (/^\d{1,2}-[A-Za-z]{3}-\d{2}$/.test(input)) {
+                const [d, mmm, yy] = input.split("-");
+                const y = parseInt(yy, 10) < 50 ? `20${yy}` : `19${yy}`;
+                const bulan = {
+                  Jan: "01",
+                  Feb: "02",
+                  Mar: "03",
+                  Apr: "04",
+                  May: "05",
+                  Jun: "06",
+                  Jul: "07",
+                  Aug: "08",
+                  Sep: "09",
+                  Oct: "10",
+                  Nov: "11",
+                  Dec: "12",
+                }[mmm.substring(0, 3)];
+                return `${y}-${bulan}-${String(d).padStart(2, "0")}`;
+              }
+
+              return "";
+            }
+
             // 2️⃣ Filter sesuai JK
             let pertanyaanKategori = { ...kategoriMap };
 
@@ -574,6 +628,56 @@
                                       `;
                   }
                 }
+                if (kategori.includes("Tinggi dan Berat")) {
+                  if (kolom.includes("Tinggi")) {
+                    inputField = `
+                                        <div class="d-flex align-items-center">
+                                          <input type="number"  class="form-control"
+                                            name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
+                                          <span class="ms-2">Cm *</span>
+                                        </div>
+                                      `;
+                  } else if (kolom.includes("Berat")) {
+                    inputField = `
+                                        <div class="d-flex align-items-center">
+                                          <input type="number"  class="form-control"
+                                            name="q${nomorGlobal}" value="${jawaban}" style="width:80px;">
+                                          <span class="ms-2">Kg *</span>
+                                        </div>
+                                      `;
+                  }
+                }
+                if (kategori.includes("NIK")) {
+                  inputField = `
+                      <div class="d-flex align-items-center">
+                        <input type="text" class="form-control"
+                          name="q${nomorGlobal}" value="${jawaban}" style="width:190px;">
+                        <span class="ms-2"></span>
+                      </div>
+                    `;
+                }
+                if (kategori.includes("No Telp")) {
+                  inputField = `
+                      <div class="d-flex align-items-center">
+                        <input type="text" class="form-control"
+                          name="q${nomorGlobal}" value="${jawaban}" style="width:190px;">
+                        <span class="ms-2"></span>
+                      </div>
+                    `;
+                }
+                if (kategori.includes("Tanggal Lahir")) {
+                  let jawaban = "1-Sep-09";
+                  let dateValue = parseTanggal(jawaban);
+
+                  inputField = `
+                    <div class="d-flex align-items-center">
+                      <input type="date" class="form-control"
+                        name="q${nomorGlobal}" value="${dateValue}" style="width:190px;">
+                      <span class="ms-2"></span>
+                    </div>
+                  `;
+                }
+
                 if (kategori.includes("Skrining Gula Darah (Anak Sekolah)")) {
                   if (kolom.includes("Gula Darah Sewaktu (GDS)")) {
                     inputField = `

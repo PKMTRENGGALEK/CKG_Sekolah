@@ -292,16 +292,33 @@
       }
       html += `<tr><th>${h}</th>
         <td><input type="date" class="form-control form-control-sm" name="${h}" value="${dateVal}"></td></tr>`;
+
     } else if (i >= startIdx && i < endIdx) {
-      // semua kolom di range pertanyaan → dropdown Ya/Tidak
-      html += `<tr><th>${h}</th>
-        <td>
-          <select class="form-select form-select-sm" name="${h}">
-            <option value="" ${val===""?"selected":""}>--Pilih--</option>
-            <option value="Ya" ${val==="Ya"?"selected":""}>Ya</option>
-            <option value="Tidak" ${val==="Tidak"?"selected":""}>Tidak</option>
-          </select>
-        </td></tr>`;
+      // --- kolom tertentu pakai input number ---
+      const numericFields = [
+        "Dalam 7 hari terakhir, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
+        "Biasanya dalam satu minggu, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
+        "Tekanan Darah Sistolik *",
+        "Tekanan Darah Diastolik *",
+        "Gula Darah Sewaktu (GDS)",
+        "HB"
+      ];
+
+      if (numericFields.includes(key)) {
+        html += `<tr><th>${h}</th>
+          <td><input type="number" class="form-control form-control-sm" name="${h}" value="${val}"></td></tr>`;
+      } else {
+        // default → dropdown Ya/Tidak
+        html += `<tr><th>${h}</th>
+          <td>
+            <select class="form-select form-select-sm" name="${h}">
+              <option value="" ${val===""?"selected":""}>--Pilih--</option>
+              <option value="Ya" ${val==="Ya"?"selected":""}>Ya</option>
+              <option value="Tidak" ${val==="Tidak"?"selected":""}>Tidak</option>
+            </select>
+          </td></tr>`;
+      }
+
     } else {
       // default text
       html += `<tr><th>${h}</th>
@@ -320,34 +337,48 @@
   modal.show();
 
   // handle submit
-  document.getElementById("detailForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
+document.getElementById("detailForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
 
-    const payload = new URLSearchParams();
-    payload.append("kelas", "kelas 3");
-    payload.append("action", "edit");
-    payload.append("index", index + 2);
+  const payload = new URLSearchParams();
+  payload.append("kelas", "kelas 3");
+  payload.append("action", "edit");
+  payload.append("index", index + 2);
 
-    for (const [k, v] of formData.entries()) {
-      payload.append(k, v);
-    }
+  for (const [k, v] of formData.entries()) {
+    payload.append(k, v);
+  }
 
-    try {
-      const res = await fetch(API_URL, { method: "POST", body: payload });
-      const json = await res.json();
-      if (json.success) {
-        Swal.fire("Sukses", "Data berhasil diperbarui.", "success");
-        modal.hide();
-        loadData();
-      } else {
-        Swal.fire("Error", json.message, "error");
-      }
-    } catch (err) {
-      Swal.fire("Error", err.message, "error");
-    }
+  // tampilkan loading SweetAlert
+  Swal.fire({
+    title: "Menyimpan...",
+    text: "Mohon tunggu sebentar",
+    didOpen: () => {
+      Swal.showLoading();
+    },
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false
   });
+
+  try {
+    const res = await fetch(API_URL, { method: "POST", body: payload });
+    const json = await res.json();
+    if (json.success) {
+      Swal.fire("Sukses", "Data berhasil diperbarui.", "success");
+      modal.hide();
+      loadData();
+    } else {
+      Swal.fire("Error", json.message, "error");
+    }
+  } catch (err) {
+    Swal.fire("Error", err.message, "error");
+  }
+});
+
 }
+
 
       // --- Bagian TTD ---
       function openTTDModal(index) {

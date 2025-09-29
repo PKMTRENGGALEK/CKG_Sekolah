@@ -274,57 +274,109 @@
   let html = "<form id='detailForm'><table class='table table-bordered table-sm'>";
 
   headers.forEach((h, i) => {
-    const key = h.trim();
-    const val = data[h] || "";
+  const key = h.trim();
+  const val = data[h] || "";
 
-    if (key.toLowerCase() === "ttd") {
-      if (val) {
-        html += `<tr><th>${h}</th><td><a href="${val}" target="_blank">Lihat TTD</a></td></tr>`;
+  if (key.toLowerCase() === "ttd") {
+    if (val) {
+      html += `<tr><th>${h}</th><td><a href="${val}" target="_blank">Lihat TTD</a></td></tr>`;
+    }
+  } else if (key.toLowerCase() === "tanggal lahir") {
+    // ubah format ISO ke YYYY-MM-DD
+    let dateVal = "";
+    if (val) {
+      const d = new Date(val);
+      if (!isNaN(d)) {
+        dateVal = d.toISOString().split("T")[0];
       }
-    } else if (key.toLowerCase() === "tanggal lahir") {
-      // ubah format ISO ke YYYY-MM-DD
-      let dateVal = "";
-      if (val) {
-        const d = new Date(val);
-        if (!isNaN(d)) {
-          dateVal = d.toISOString().split("T")[0];
-        }
-      }
+    }
+    html += `<tr><th>${h}</th>
+      <td><input type="date" class="form-control form-control-sm" name="${h}" value="${dateVal}"></td></tr>`;
+
+  } else if (i >= startIdx && i < endIdx) {
+    // --- kolom numeric khusus ---
+    const numericFields = [
+      "Dalam 7 hari terakhir, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
+      "Biasanya dalam satu minggu, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
+      "Tekanan Darah Sistolik *",
+      "Tekanan Darah Diastolik *",
+      "Gula Darah Sewaktu (GDS)",
+      "HB"
+    ];
+
+    if (numericFields.includes(key)) {
       html += `<tr><th>${h}</th>
-        <td><input type="date" class="form-control form-control-sm" name="${h}" value="${dateVal}"></td></tr>`;
+        <td><input type="number" class="form-control form-control-sm" name="${h}" value="${val}"></td></tr>`;
 
-    } else if (i >= startIdx && i < endIdx) {
-      // --- kolom tertentu pakai input number ---
-      const numericFields = [
-        "Dalam 7 hari terakhir, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
-        "Biasanya dalam satu minggu, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
-        "Tekanan Darah Sistolik *",
-        "Tekanan Darah Diastolik *",
-        "Gula Darah Sewaktu (GDS)",
-        "HB"
-      ];
+    } else if (key === "Gigi Hilang / Dicabut*") {
+      html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val===""?"selected":""}>--Pilih--</option>
+            <option value="Ya" ${val==="Ya"?"selected":""}>Ya</option>
+            <option value="Tidak" ${val==="Tidak"?"selected":""}>Tidak</option>
+            <option value="Dirujuk" ${val==="Dirujuk"?"selected":""}>Dirujuk</option>
+          </select>
+        </td></tr>`;
 
-      if (numericFields.includes(key)) {
-        html += `<tr><th>${h}</th>
-          <td><input type="number" class="form-control form-control-sm" name="${h}" value="${val}"></td></tr>`;
-      } else {
-        // default → dropdown Ya/Tidak
-        html += `<tr><th>${h}</th>
-          <td>
-            <select class="form-select form-select-sm" name="${h}">
-              <option value="" ${val===""?"selected":""}>--Pilih--</option>
-              <option value="Ya" ${val==="Ya"?"selected":""}>Ya</option>
-              <option value="Tidak" ${val==="Tidak"?"selected":""}>Tidak</option>
-            </select>
-          </td></tr>`;
-      }
+    } else if (
+      key === "Apakah ada gangguan pendengaran di telinga kanan? *" ||
+      key === "Apakah ada gangguan pendengaran di telinga kiri? *"
+    ) {
+      html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val===""?"selected":""}>--Pilih--</option>
+            <option value="Normal" ${val==="Normal"?"selected":""}>Normal</option>
+            <option value="Ada indikasi Gangguan Pendengaran" ${val==="Ada indikasi Gangguan Pendengaran"?"selected":""}>Ada indikasi Gangguan Pendengaran</option>
+          </select>
+        </td></tr>`;
+
+    } else if (
+      key === "Apakah ada serumen impaksi di telinga kanan? *" ||
+      key === "Apakah ada serumen impaksi di telinga kiri? *"
+    ) {
+      html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val===""?"selected":""}>--Pilih--</option>
+            <option value="Tidak ada serumen impaksi" ${val==="Tidak ada serumen impaksi"?"selected":""}>Tidak ada serumen impaksi</option>
+            <option value="Ada serumen impaksi" ${val==="Ada serumen impaksi"?"selected":""}>Ada serumen impaksi</option>
+          </select>
+        </td></tr>`;
+
+    } else if (
+      key === "Hasil Pemeriksaan Visus Mata Kanan *" ||
+      key === "Hasil Pemeriksaan Visus Mata Kiri *"
+    ) {
+      html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val===""?"selected":""}>--Pilih--</option>
+            <option value="Visus 6/6 - 6/9" ${val==="Visus 6/6 - 6/9"?"selected":""}>Visus 6/6 - 6/9</option>
+            <option value="Visus <6/9" ${val==="Visus <6/9"?"selected":""}>Visus &lt;6/9</option>
+          </select>
+        </td></tr>`;
 
     } else {
-      // default text
+      // default → Ya/Tidak
       html += `<tr><th>${h}</th>
-        <td><input type="text" class="form-control form-control-sm" name="${h}" value="${val}"></td></tr>`;
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val===""?"selected":""}>--Pilih--</option>
+            <option value="Ya" ${val==="Ya"?"selected":""}>Ya</option>
+            <option value="Tidak" ${val==="Tidak"?"selected":""}>Tidak</option>
+          </select>
+        </td></tr>`;
     }
-  });
+
+  } else {
+    // default text
+    html += `<tr><th>${h}</th>
+      <td><input type="text" class="form-control form-control-sm" name="${h}" value="${val}"></td></tr>`;
+  }
+});
+
 
   html += `</table>
     <div class="text-end">

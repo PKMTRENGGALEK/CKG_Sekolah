@@ -21,8 +21,6 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- SheetJS -->
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
       body {
@@ -35,7 +33,6 @@
         font-size: 12px !important;
       }
       thead th {
-        /*position: sticky;*/
         top: 0;
         background-color: #212529;
         color: white;
@@ -46,6 +43,10 @@
         cursor: crosshair;
         border: 1px solid #ccc;
       }
+      #signaturePad {
+        border: 2px solid #ccc;
+        touch-action: none; /* penting agar bisa digambar di touchscreen */
+      }
     </style>
   </head>
   <body>
@@ -54,7 +55,7 @@
       <div class="container d-flex justify-content-between align-items-center">
         <span class="navbar-brand mb-0 h5 text-success">
           <i class="bi bi-bar-chart-line"></i> Register PKG Siswa MA
-          MUHAMMADIYAH 1
+          Muhammadiyah 1 Trenggalek
         </span>
         <button
           onclick="history.back()"
@@ -71,23 +72,17 @@
         class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
       >
         <h4 class="text-success mb-0">
-          <u>Data Siswa Kelas 2 </u>
+          <u>Data Siswa kelas 2 </u>
         </h4>
-        <div class="d-flex gap-2">
-          <button
-            class="btn btn-sm btn-outline-success shadow"
-            id="importExcelBtn"
-          >
-            <i class="bi bi-upload"></i> Import Excel
-          </button>
+        <!-- <div class="d-flex gap-2">
           <a
-            href="https://docs.google.com/spreadsheets/d/1-NwNV_Y-_xMIcf7r-lj6O_0ohmfBcLBqlxaKAeB9dfc/edit?usp=sharing"
+            href="https://docs.google.com/spreadsheets/d/1uxvXzql6Dzk7_YiMwSjIU-Fpy2cFaAJB7japJ4U9_Js/edit?gid=2094132584#gid=2094132584"
             target="_blank"
             class="btn btn-outline-danger btn-sm shadow"
           >
             <i class="bi bi-file-earmark-richtext"></i> View Source Data
           </a>
-        </div>
+        </div> -->
       </div>
 
       <!-- Tabel -->
@@ -96,7 +91,7 @@
           <div class="table-responsive">
             <table class="table table-bordered table-sm" id="dataTable">
               <thead id="tableHead" class="table-success bg-gradient"></thead>
-              <tbody id="tableBody">
+              <tbody id="tableBody" style="font-size: 14px">
                 <tr class="text-center">
                   <td colspan="100%">
                     <div
@@ -148,7 +143,7 @@
             <div class="modal-body">
               <canvas
                 id="signaturePad"
-                style="border: 1px solid #ccc; width: 100%; height: 150px"
+                style="width: 100%; height: 150px"
               ></canvas>
               <button
                 type="button"
@@ -166,12 +161,6 @@
         </div>
       </div>
     </div>
-    <input
-      type="file"
-      id="excelFileInput"
-      accept=".xlsx, .xls"
-      style="display: none"
-    />
 
     <!-- Footer -->
     <footer class="bg-light text-dark text-center py-2 fixed-bottom">
@@ -185,350 +174,372 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <!-- SignaturePad -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
     <script>
-      const kelas = "Kelas 2"; // ✅ Sheet yang digunakan
-      const scriptURL =
+      const API_URL =
         "https://script.google.com/macros/s/AKfycbzLavwlTkNNpZGe2l2MMfbkEKpSyfIRojvRk_kKd0qOGkh8h3SlJnZ4amMjG2hSVGtZ/exec";
-      const getScriptURL = () =>
-        `${scriptURL}?kelas=${encodeURIComponent(kelas)}`;
-      let globalData = [];
 
-      const ttdModal = new bootstrap.Modal(document.getElementById("ttdModal"));
-      const canvas = document.getElementById("signaturePad");
-      const ctx = canvas.getContext("2d");
-      let drawing = false;
-
-      function resizeCanvas() {
-        const parent = canvas.parentElement;
-        canvas.width = parent.offsetWidth;
-        canvas.height = 150;
-        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-
-      window.addEventListener("resize", resizeCanvas);
-
-      canvas.addEventListener("mousedown", () => (drawing = true));
-      canvas.addEventListener("mouseup", () => {
-        drawing = false;
-        ctx.beginPath();
-      });
-      canvas.addEventListener("mousemove", draw);
-
-      canvas.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        drawing = true;
-      });
-      canvas.addEventListener("touchend", (e) => {
-        e.preventDefault();
-        drawing = false;
-        ctx.beginPath();
-      });
-      canvas.addEventListener("touchmove", drawTouch);
-
-      function draw(e) {
-        if (!drawing) return;
-        const rect = canvas.getBoundingClientRect();
-        ctx.lineWidth = 2;
-        ctx.lineCap = "round";
-        ctx.strokeStyle = "#000";
-        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-      }
-
-      function drawTouch(e) {
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        if (drawing) {
-          ctx.lineWidth = 2;
-          ctx.lineCap = "round";
-          ctx.strokeStyle = "#000";
-          ctx.lineTo(x, y);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-        }
-        e.preventDefault();
-      }
-
-      document.getElementById("clearBtn").onclick = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      };
-
-      const detailFields = [
-        "Risiko Tuberkulosis",
-        "Gejala DM Anak",
-        "Risiko Kesehatan Jiwa",
-        "Kesehatan Reproduksi",
-        "Perilaku Merokok",
-        "Risiko Hepatitis B",
-        "Risiko Hepatitis C",
-        "Risiko Talasemia",
-        "Aktivitas Fisik*",
-        "PAR-Q",
-        "Riwayat Imunisasi HPV* (Kelas 9 Putri)",
+      const VISIBLE_COLUMNS = [
+        "No",
+        "Nama",
+        "Kelas",
+        "Jk",
+        "NIK",
+        "Tempat Lahir",
+        "Tanggal Lahir",
+        "Alamat",
+        "No Telp",
       ];
 
-      window.showDetail = function (index) {
-        const row = globalData[index];
-        let html = `<form id="editForm"><table class='table table-bordered table-sm'>`;
-        detailFields.forEach((field) => {
-          html += `<tr>
-      <th>${field}</th>
-      <td><input type="text" class="form-control form-control-sm" name="${field}" value="${
-            row[field] || ""
-          }"></td>
-    </tr>`;
-        });
-        html += `</table></form>
-    <div class="text-end">
-      <button type="button" class="btn btn-success btn-sm" onclick="submitEdit(${index})">
-        <i class="bi bi-save"></i> Simpan Perubahan
-      </button>
-    </div>`;
-        document.getElementById("detailContent").innerHTML = html;
-        new bootstrap.Modal(document.getElementById("detailModal")).show();
-      };
-
-      window.submitEdit = async function (index) {
-        const formEl = document.getElementById("editForm");
-        const formData = new FormData(formEl);
-        const row = globalData[index];
-        const payload = new URLSearchParams();
-
-        Object.keys(row).forEach((k) => {
-          if (!detailFields.includes(k)) payload.append(k, row[k]);
-        });
-        detailFields.forEach((field) => {
-          payload.append(field, formData.get(field));
-        });
-
-        payload.append("action", "edit");
-        payload.append("index", index);
-        payload.append("kelas", kelas); // ✅ kirim kelas
-
-        Swal.fire({
-          title: "Menyimpan...",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
-        try {
-          const res = await fetch(scriptURL, { method: "POST", body: payload });
-          const result = await res.json();
-          Swal.fire(
-            "Berhasil",
-            result.message || "Data berhasil disimpan!",
-            "success"
-          ).then(() => location.reload());
-        } catch {
-          Swal.fire("Gagal", "Gagal menyimpan data!", "error");
-        }
-      };
+      let signaturePad, rowIndexGlobal;
 
       async function loadData() {
         try {
-          const res = await fetch(getScriptURL());
-          const result = await res.json();
-          globalData = result.data || result;
+          const res = await fetch(`${API_URL}?kelas=kelas 2`);
+          const json = await res.json();
 
-          const headers = (
-            result.headers || Object.keys(globalData[0] || {})
-          ).filter((h) => h !== "TTD" && !detailFields.includes(h));
-
-          const tableHead = document.getElementById("tableHead");
-          const tableBody = document.getElementById("tableBody");
-          tableHead.innerHTML = "";
-          tableBody.innerHTML = "";
-
-          if (globalData.length === 0) {
-            tableHead.innerHTML = "<tr><th class='text-center'>Info</th></tr>";
-            tableBody.innerHTML =
-              "<tr><td class='text-center text-muted'>Data kosong</td></tr>";
+          if (!json.success) {
+            Swal.fire("Error", json.message, "error");
             return;
           }
 
-          const headRow = document.createElement("tr");
-          headers.forEach((h) => {
-            const th = document.createElement("th");
-            th.textContent = h;
-            headRow.appendChild(th);
-          });
-          headRow.innerHTML += "<th>Detail Skrining</th><th>Aksi</th>";
-          tableHead.appendChild(headRow);
+          // Header
+          let headHtml = "<tr>";
+          VISIBLE_COLUMNS.forEach((h) => (headHtml += `<th>${h}</th>`));
+          headHtml += "<th>Skrining</th><th>TTD</th></tr>";
+          document.getElementById("tableHead").innerHTML = headHtml;
 
-          globalData.forEach((row, i) => {
-            const tr = document.createElement("tr");
-            headers.forEach((h) => {
-              const td = document.createElement("td");
-              td.innerHTML = formatValue(row[h], h);
-              tr.appendChild(td);
+          // Body
+          let bodyHtml = "";
+          json.data.forEach((row, idx) => {
+            bodyHtml += "<tr>";
+            VISIBLE_COLUMNS.forEach((h) => {
+              let val = row[h] || "";
+
+              // format khusus Tanggal Lahir
+              if (h.toLowerCase() === "tanggal lahir" && val) {
+                const d = new Date(val);
+                if (!isNaN(d)) {
+                  // ubah ke format DD/MM/YYYY
+                  val = d.toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  });
+                }
+              }
+
+              bodyHtml += `<td>${val}</td>`;
             });
 
-            const detailTd = document.createElement("td");
-            detailTd.innerHTML = `<button class='btn btn-sm btn-outline-info' onclick='showDetail(${i})'><i class="bi bi-binoculars"></i> View</button>`;
-            tr.appendChild(detailTd);
+            // Skrining
+            bodyHtml += `
+        <td class="text-center">
+          <button class="btn btn-sm btn-info" onclick="showDetail(${idx})">
+            <i class="bi bi-eye"></i>
+          </button>
+        </td>`;
 
-            const aksiTd = document.createElement("td");
-            if (row["TTD"] && row["TTD"].startsWith("http")) {
-              aksiTd.innerHTML = `<a href="${row["TTD"]}" class='btn btn-sm btn-outline-warning' target="_blank"><i class="bi bi-vector-pen"></i></a>`;
+            // TTD
+            const ttdUrl = row["TTD"] || "";
+            if (ttdUrl) {
+              bodyHtml += `
+          <td class="text-center">
+            <a href="${ttdUrl}" target="_blank" class="btn btn-sm btn-outline-success">
+              <i class="bi bi-pen"></i> Lihat
+            </a>
+            <button class="btn btn-sm btn-outline-primary" onclick="openTTDModal(${idx})">
+              <i class="bi bi-pencil-square"></i> Ubah
+            </button>
+          </td>`;
             } else {
-              aksiTd.innerHTML = `<button class="btn btn-sm btn-outline-success" onclick="openTTDModal(${i})">TTD</button>`;
+              bodyHtml += `
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-primary" onclick="openTTDModal(${idx})">
+              <i class="bi bi-pencil-square"></i> TTD
+            </button>
+          </td>`;
             }
-            tr.appendChild(aksiTd);
-            tableBody.appendChild(tr);
+            bodyHtml += "</tr>";
           });
 
-          $("#dataTable").DataTable({
-            destroy: true,
-            responsive: true,
-            order: [],
-            language: {
-              url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json",
-            },
-            columnDefs: [{ targets: "_all", className: "text-center" }],
-          });
-        } catch (error) {
-          console.error(error);
-          Swal.fire(
-            "Gagal",
-            "Gagal memuat data. Periksa koneksi atau scriptURL.",
-            "error"
-          );
+          document.getElementById("tableBody").innerHTML = bodyHtml;
+          $("#dataTable").DataTable();
+          window._dataCache = json;
+        } catch (err) {
+          Swal.fire("Error", "Gagal memuat data: " + err.message, "error");
         }
       }
 
-      function formatValue(value, header) {
-        if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-          const date = new Date(value);
-          return date.toLocaleDateString("id-ID");
-        }
-        return value;
+      function showDetail(index) {
+        const data = window._dataCache.data[index];
+        const headers = window._dataCache.headers;
+
+        // cari index awal pertanyaan
+        const startIdx = headers.findIndex((h) =>
+          h.trim().startsWith("Dalam 2 minggu terakhir")
+        );
+        const endIdx = headers.findIndex(
+          (h) => h.trim().toLowerCase() === "ttd"
+        );
+
+        let html =
+          "<form id='detailForm'><table class='table table-bordered table-sm'>";
+
+        headers.forEach((h, i) => {
+          const key = h.trim();
+          const val = data[h] || "";
+
+          if (key.toLowerCase() === "ttd") {
+            if (val) {
+              html += `<tr><th>${h}</th><td><a href="${val}" target="_blank">Lihat TTD</a></td></tr>`;
+            }
+          } else if (key.toLowerCase() === "tanggal lahir") {
+            // ubah format ISO ke YYYY-MM-DD
+            let dateVal = "";
+            if (val) {
+              const d = new Date(val);
+              if (!isNaN(d)) {
+                dateVal = d.toISOString().split("T")[0];
+              }
+            }
+            html += `<tr><th>${h}</th>
+      <td><input type="date" class="form-control form-control-sm" name="${h}" value="${dateVal}"></td></tr>`;
+          } else if (i >= startIdx && i < endIdx) {
+            // --- kolom numeric khusus ---
+            const numericFields = [
+              "Dalam 7 hari terakhir, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
+              "Biasanya dalam satu minggu, berapa hari Anda aktif secara fisik dalam waktu total selama minimal 60 menit sehari? *",
+              "Tekanan Darah Sistolik *",
+              "Tekanan Darah Diastolik *",
+              "Gula Darah Sewaktu (GDS)",
+              "HB",
+            ];
+
+            if (numericFields.includes(key)) {
+              html += `<tr><th>${h}</th>
+        <td><input type="text" class="form-control form-control-sm" name="${h}" value="${val}"></td></tr>`;
+            } else if (key === "Gigi Hilang / Dicabut*") {
+              html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val === "" ? "selected" : ""}>--Pilih--</option>
+            <option value="Ya" ${val === "Ya" ? "selected" : ""}>Ya</option>
+            <option value="Tidak" ${
+              val === "Tidak" ? "selected" : ""
+            }>Tidak</option>
+            <option value="Dirujuk" ${
+              val === "Dirujuk" ? "selected" : ""
+            }>Dirujuk</option>
+          </select>
+        </td></tr>`;
+            } else if (
+              key === "Apakah ada gangguan pendengaran di telinga kanan? *" ||
+              key === "Apakah ada gangguan pendengaran di telinga kiri? *"
+            ) {
+              html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val === "" ? "selected" : ""}>--Pilih--</option>
+            <option value="Normal" ${
+              val === "Normal" ? "selected" : ""
+            }>Normal</option>
+            <option value="Ada indikasi Gangguan Pendengaran" ${
+              val === "Ada indikasi Gangguan Pendengaran" ? "selected" : ""
+            }>Ada indikasi Gangguan Pendengaran</option>
+          </select>
+        </td></tr>`;
+            } else if (
+              key === "Apakah ada serumen impaksi di telinga kanan? *" ||
+              key === "Apakah ada serumen impaksi di telinga kiri? *"
+            ) {
+              html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val === "" ? "selected" : ""}>--Pilih--</option>
+            <option value="Tidak ada serumen impaksi" ${
+              val === "Tidak ada serumen impaksi" ? "selected" : ""
+            }>Tidak ada serumen impaksi</option>
+            <option value="Ada serumen impaksi" ${
+              val === "Ada serumen impaksi" ? "selected" : ""
+            }>Ada serumen impaksi</option>
+          </select>
+        </td></tr>`;
+            } else if (
+              key === "Hasil Pemeriksaan Visus Mata Kanan *" ||
+              key === "Hasil Pemeriksaan Visus Mata Kiri *"
+            ) {
+              html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val === "" ? "selected" : ""}>--Pilih--</option>
+            <option value="Visus 6/6 - 6/9" ${
+              val === "Visus 6/6 - 6/9" ? "selected" : ""
+            }>Visus 6/6 - 6/9</option>
+            <option value="Visus <6/9" ${
+              val === "Visus <6/9" ? "selected" : ""
+            }>Visus &lt;6/9</option>
+          </select>
+        </td></tr>`;
+            } else {
+              // default → Ya/Tidak
+              html += `<tr><th>${h}</th>
+        <td>
+          <select class="form-select form-select-sm" name="${h}">
+            <option value="" ${val === "" ? "selected" : ""}>--Pilih--</option>
+            <option value="Ya" ${val === "Ya" ? "selected" : ""}>Ya</option>
+            <option value="Tidak" ${
+              val === "Tidak" ? "selected" : ""
+            }>Tidak</option>
+          </select>
+        </td></tr>`;
+            }
+          } else {
+            // default text
+            html += `<tr><th>${h}</th>
+      <td><input type="text" class="form-control form-control-sm" name="${h}" value="${val}"></td></tr>`;
+          }
+        });
+
+        html += `</table>
+    <div class="text-end">
+      <button type="submit" class="btn btn-success btn-sm">Simpan Perubahan</button>
+    </div></form>`;
+
+        document.getElementById("detailContent").innerHTML = html;
+
+        const modal = new bootstrap.Modal(
+          document.getElementById("detailModal")
+        );
+        modal.show();
+
+        // handle submit
+        document
+          .getElementById("detailForm")
+          .addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const payload = new URLSearchParams();
+            payload.append("kelas", "kelas 2");
+            payload.append("action", "edit");
+            payload.append("index", index + 2);
+
+            for (const [k, v] of formData.entries()) {
+              payload.append(k, v);
+            }
+
+            // tampilkan loading SweetAlert
+            Swal.fire({
+              title: "Menyimpan...",
+              text: "Mohon tunggu sebentar",
+              didOpen: () => {
+                Swal.showLoading();
+              },
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+            });
+
+            try {
+              const res = await fetch(API_URL, {
+                method: "POST",
+                body: payload,
+              });
+              const json = await res.json();
+              if (json.success) {
+                Swal.fire("Sukses", "Data berhasil diperbarui.", "success");
+                modal.hide();
+                loadData();
+              } else {
+                Swal.fire("Error", json.message, "error");
+              }
+            } catch (err) {
+              Swal.fire("Error", err.message, "error");
+            }
+          });
       }
 
-      function isCanvasEmpty(canvas) {
-        const blank = document.createElement("canvas");
-        blank.width = canvas.width;
-        blank.height = canvas.height;
-        return canvas.toDataURL() === blank.toDataURL();
+      // --- Bagian TTD ---
+      function openTTDModal(index) {
+        rowIndexGlobal = index + 2;
+        const modalEl = document.getElementById("ttdModal");
+        const canvas = document.getElementById("signaturePad");
+        const ctx = canvas.getContext("2d");
+
+        // Pastikan reset sebelum tampil
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Tunggu modal benar-benar ditampilkan
+        modalEl.addEventListener(
+          "shown.bs.modal",
+          () => {
+            canvas.width =
+              modalEl.querySelector(".modal-body").clientWidth - 20; // lebar modal body
+            canvas.height = 200;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            signaturePad = new SignaturePad(canvas, {
+              backgroundColor: "white",
+            });
+          },
+          { once: true }
+        );
+
+        new bootstrap.Modal(modalEl).show();
       }
 
-      window.openTTDModal = (index) => {
-        document.getElementById("rowIndex").value = index;
-        ttdModal.show();
-        setTimeout(() => resizeCanvas(), 300);
-      };
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        if (signaturePad) signaturePad.clear();
+      });
 
       document
         .getElementById("ttdForm")
-        .addEventListener("submit", async function (e) {
+        .addEventListener("submit", async (e) => {
           e.preventDefault();
-
-          if (isCanvasEmpty(canvas)) {
+          if (signaturePad.isEmpty()) {
             Swal.fire(
-              "Kosong",
-              "Silakan tanda tangani dulu sebelum menyimpan.",
+              "Peringatan",
+              "Silakan gambar tanda tangan dulu.",
               "warning"
             );
             return;
           }
 
-          Swal.fire({
-            title: "Menyimpan TTD...",
-            text: "Mohon tunggu sebentar.",
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading(),
-          });
-
-          const index = document.getElementById("rowIndex").value;
-          const row = globalData[index];
-          const headers = Object.keys(row);
-          const formData = new URLSearchParams();
-          headers.forEach((h) => formData.append(h, row[h]));
-          formData.append("file", canvas.toDataURL("image/png").split(",")[1]);
-          formData.append(
-            "fileName",
-            `ttd_${(row["Nama"] || "tanpa_nama").replace(/\s+/g, "_")}.png`
-          );
-          formData.append("mimeType", "image/png");
-          formData.append("action", "edit");
-          formData.append("index", index);
-          formData.append("kelas", kelas); // ✅ kelas dikirim juga
+          const dataUrl = signaturePad.toDataURL("image/png");
+          const base64Data = dataUrl.split(",")[1];
 
           try {
-            const response = await fetch(scriptURL, {
+            const formData = new URLSearchParams();
+            formData.append("kelas", "kelas 2");
+            formData.append("action", "edit");
+            formData.append("index", rowIndexGlobal);
+            formData.append("file", base64Data);
+            formData.append("filename", `ttd_${Date.now()}.png`);
+            formData.append("mimetype", "image/png");
+
+            const res = await fetch(API_URL, {
               method: "POST",
               body: formData,
             });
-            const result = await response.json();
-            ttdModal.hide();
-            Swal.fire(
-              "Berhasil",
-              result.message || "TTD berhasil disimpan.",
-              "success"
-            ).then(() => location.reload());
-          } catch {
-            Swal.fire("Gagal", "Gagal menyimpan TTD.", "error");
+            const json = await res.json();
+
+            if (json.success) {
+              Swal.fire("Sukses", "TTD berhasil disimpan.", "success");
+              bootstrap.Modal.getInstance(
+                document.getElementById("ttdModal")
+              ).hide();
+              loadData();
+            } else {
+              Swal.fire("Error", json.message, "error");
+            }
+          } catch (err) {
+            Swal.fire("Error", "Gagal menyimpan TTD: " + err.message, "error");
           }
         });
 
-      $(document).on("click", "#importExcelBtn", function () {
-        $("#excelFileInput").click();
-      });
-
-      $("#excelFileInput").on("change", function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        Swal.fire({
-          title: "Mengimpor...",
-          text: "Mohon tunggu hingga proses selesai.",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-          const promises = jsonData.map((item) => {
-            const formData = new URLSearchParams();
-            for (const key in item) {
-              formData.append(key, item[key]);
-            }
-            formData.append("action", "add");
-            formData.append("kelas", kelas); // ✅ kirim kelas juga
-
-            return fetch(scriptURL, {
-              method: "POST",
-              body: formData,
-            });
-          });
-
-          Promise.all(promises)
-            .then(() => {
-              Swal.fire(
-                "Sukses",
-                "Data Excel berhasil diimpor!",
-                "success"
-              ).then(() => location.reload());
-            })
-            .catch((err) => {
-              console.error("Gagal kirim data Excel", err);
-              Swal.fire("Gagal", "Terjadi kesalahan saat impor data.", "error");
-            });
-        };
-        reader.readAsArrayBuffer(file);
-      });
-
-      loadData(); // 🚀 panggil saat pertama kali
+      document.addEventListener("DOMContentLoaded", loadData);
     </script>
   </body>
 </html>
